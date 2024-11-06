@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34616.47
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolExplorerWPF", "ToolExplorerWPF\ToolExplorerWPF.csproj", "{EB922362-ED35-4E05-9DFF-ACFD73510FD1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EB922362-ED35-4E05-9DFF-ACFD73510FD1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB922362-ED35-4E05-9DFF-ACFD73510FD1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB922362-ED35-4E05-9DFF-ACFD73510FD1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB922362-ED35-4E05-9DFF-ACFD73510FD1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {806D1102-0425-4F01-BFA6-EE9D8CEC1C0A}
+	EndGlobalSection
+EndGlobal
