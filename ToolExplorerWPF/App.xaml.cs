@@ -53,8 +53,8 @@ namespace ToolExplorerWPF
 
                 services.AddSingleton<DashboardPage>();
                 services.AddSingleton<DashboardVM>();
-                services.AddSingleton<DataPage>();
-                services.AddSingleton<DataVM>();
+                services.AddSingleton<NoisePage>();
+                services.AddSingleton<NoiseVM>();
                 services.AddSingleton<SettingsPage>();
                 services.AddSingleton<SettingsVM>();
             }).Build();
