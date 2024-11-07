@@ -36,14 +36,6 @@ namespace ToolExplorerWPF.Services
             }
         }
 
-        /// <summary>
-        /// generate a new permutation.
-        /// </summary>
-        public void Reseed()
-        {
-            CalculatePermutation(out _permutation);
-        }
-
         private void CalculateGradients(out Vector2[] grad)
         {
             grad = new Vector2[256];
