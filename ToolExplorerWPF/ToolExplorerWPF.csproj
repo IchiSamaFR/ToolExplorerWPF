@@ -27,7 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\AstarAlgo\AstarLibrary\AstarLibrary.csproj" />
+    <ProjectReference Include="..\AstarAlgo\AstarLibrary\AstarLibrary.csproj" />
   </ItemGroup>
 
   <ItemGroup>

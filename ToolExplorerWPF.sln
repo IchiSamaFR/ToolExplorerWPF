@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToolExplorerWPF", "ToolExpl
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "References", "References", "{8C92D91A-22FC-4652-B624-3E0F17425FE3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AstarLibrary", "..\AstarAlgo\AstarLibrary\AstarLibrary.csproj", "{EDA7542B-9750-47C4-B0CA-DF2A84EDFCD1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AstarLibrary", "AstarAlgo\AstarLibrary\AstarLibrary.csproj", "{65FAD9E1-6EF8-4A4B-ABA1-A0153954B56D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,16 +19,16 @@ Global
 		{EB922362-ED35-4E05-9DFF-ACFD73510FD1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EB922362-ED35-4E05-9DFF-ACFD73510FD1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EB922362-ED35-4E05-9DFF-ACFD73510FD1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EDA7542B-9750-47C4-B0CA-DF2A84EDFCD1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EDA7542B-9750-47C4-B0CA-DF2A84EDFCD1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EDA7542B-9750-47C4-B0CA-DF2A84EDFCD1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EDA7542B-9750-47C4-B0CA-DF2A84EDFCD1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{65FAD9E1-6EF8-4A4B-ABA1-A0153954B56D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{65FAD9E1-6EF8-4A4B-ABA1-A0153954B56D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{65FAD9E1-6EF8-4A4B-ABA1-A0153954B56D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{65FAD9E1-6EF8-4A4B-ABA1-A0153954B56D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{EDA7542B-9750-47C4-B0CA-DF2A84EDFCD1} = {8C92D91A-22FC-4652-B624-3E0F17425FE3}
+		{65FAD9E1-6EF8-4A4B-ABA1-A0153954B56D} = {8C92D91A-22FC-4652-B624-3E0F17425FE3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {806D1102-0425-4F01-BFA6-EE9D8CEC1C0A}
