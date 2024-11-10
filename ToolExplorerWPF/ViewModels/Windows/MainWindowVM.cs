@@ -27,6 +27,12 @@ namespace ToolExplorerWPF.ViewModels.Windows
                 Content = "Perlin noise",
                 Icon = new SymbolIcon { Symbol = SymbolRegular.DataHistogram24 },
                 TargetPageType = typeof(Views.Pages.NoisePage)
+            },
+            new NavigationViewItem()
+            {
+                Content = "Path finder",
+                Icon = new SymbolIcon { Symbol = SymbolRegular.DataHistogram24 },
+                TargetPageType = typeof(Views.Pages.PathFinderPage)
             }
         };
 
