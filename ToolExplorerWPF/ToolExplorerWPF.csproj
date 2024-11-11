@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2849.39" />
     <PackageReference Include="System.Drawing.Common" Version="8.0.10" />
     <PackageReference Include="WPF-UI" Version="3.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0 " />
@@ -28,6 +29,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AstarAlgo\AstarLibrary\AstarLibrary.csproj" />
+    <ProjectReference Include="..\HtmlScraperLibrary\HtmlScraperLibrary\HtmlScraperLibrary.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -57,6 +57,9 @@ namespace ToolExplorerWPF
                 services.AddSingleton<NoiseVM>();
                 services.AddSingleton<PathFinderPage>();
                 services.AddSingleton<PathFinderVM>();
+                services.AddSingleton<HtmlScraperPage>();
+                services.AddSingleton<HtmlScraperVM>();
+
                 services.AddSingleton<SettingsPage>();
                 services.AddSingleton<SettingsVM>();
             }).Build();

@@ -9,6 +9,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "References", "References", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AstarLibrary", "AstarAlgo\AstarLibrary\AstarLibrary.csproj", "{65FAD9E1-6EF8-4A4B-ABA1-A0153954B56D}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HtmlScraperLibrary", "HtmlScraperLibrary\HtmlScraperLibrary\HtmlScraperLibrary.csproj", "{89BCFC0B-4792-4D9E-A991-1AEE521221F6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,12 +25,17 @@ Global
 		{65FAD9E1-6EF8-4A4B-ABA1-A0153954B56D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{65FAD9E1-6EF8-4A4B-ABA1-A0153954B56D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{65FAD9E1-6EF8-4A4B-ABA1-A0153954B56D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{89BCFC0B-4792-4D9E-A991-1AEE521221F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{89BCFC0B-4792-4D9E-A991-1AEE521221F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{89BCFC0B-4792-4D9E-A991-1AEE521221F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{89BCFC0B-4792-4D9E-A991-1AEE521221F6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{65FAD9E1-6EF8-4A4B-ABA1-A0153954B56D} = {8C92D91A-22FC-4652-B624-3E0F17425FE3}
+		{89BCFC0B-4792-4D9E-A991-1AEE521221F6} = {8C92D91A-22FC-4652-B624-3E0F17425FE3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {806D1102-0425-4F01-BFA6-EE9D8CEC1C0A}

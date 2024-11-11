@@ -33,6 +33,12 @@ namespace ToolExplorerWPF.ViewModels.Windows
                 Content = "Path finder",
                 Icon = new SymbolIcon { Symbol = SymbolRegular.DataHistogram24 },
                 TargetPageType = typeof(Views.Pages.PathFinderPage)
+            },
+            new NavigationViewItem()
+            {
+                Content = "HTML Scraper",
+                Icon = new SymbolIcon { Symbol = SymbolRegular.DataHistogram24 },
+                TargetPageType = typeof(Views.Pages.HtmlScraperPage)
             }
         };
 
