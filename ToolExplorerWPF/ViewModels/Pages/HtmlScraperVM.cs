@@ -1,5 +1,4 @@
-﻿using Fizzler.Systems.HtmlAgilityPack;
-using HtmlAgilityPack;
+﻿using HtmlAgilityPack;
 using HtmlScraperLibrary;
 using HtmlScraperLibrary.Components;
 using Microsoft.Web.WebView2.Core;
@@ -8,7 +7,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Text.Json.Nodes;
-using System.Windows.Media.Imaging;
+using System.Windows.Documents;
 using Wpf.Ui.Controls;
 
 namespace ToolExplorerWPF.ViewModels.Pages
@@ -19,6 +18,8 @@ namespace ToolExplorerWPF.ViewModels.Pages
 
         [ObservableProperty]
         private WebView2 _webView = new WebView2();
+        [ObservableProperty]
+        private RichTextBox _richTextBox = new RichTextBox();
 
         [ObservableProperty]
         private string _url;
@@ -26,10 +27,7 @@ namespace ToolExplorerWPF.ViewModels.Pages
         private string _urlSource;
 
         [ObservableProperty]
-        private string _xamlConfig;
-
-        [ObservableProperty]
-        private ObservableCollection<JsonArray> _jsonArrays = new ObservableCollection<JsonArray>();
+        private ObservableCollection<JsonNode> _jsonArrays = new ObservableCollection<JsonNode>();
 
         public void OnNavigatedTo()
         {
@@ -44,6 +42,7 @@ namespace ToolExplorerWPF.ViewModels.Pages
             _isInitialized = true;
             Url = "https://www.google.com/search?q=.net";
             InitWebView2();
+            InitRichTextBox();
         }
 
         [RelayCommand]
@@ -70,7 +69,6 @@ namespace ToolExplorerWPF.ViewModels.Pages
             }
         }
 
-        string test = "";
         [RelayCommand]
         public void LoadXMLConfigHtml()
         {
@@ -81,9 +79,7 @@ namespace ToolExplorerWPF.ViewModels.Pages
 
             if (dialog.ShowDialog() == true)
             {
-                XamlConfig = string.Empty;
-                XamlConfig = File.ReadAllText(dialog.FileName);
-                test = dialog.FileName;
+                SetDocumentText(File.ReadAllText(dialog.FileName));
             }
         }
         [RelayCommand]
@@ -94,11 +90,11 @@ namespace ToolExplorerWPF.ViewModels.Pages
             var html = await GetDocumentHtmlAsync();
             document.LoadHtml(html);
 
-            var context = ComponentConfig.LoadFromXML(test);
+            var context = ComponentConfig.LoadFromXMLContent(GetDocumentText());
             var scrapper = Scraper.Build(context);
             foreach (var item in context.Scrapers)
             {
-                JsonArrays.Add(scrapper.ActionLocal(item, document));
+                JsonArrays.Add(scrapper.ActionLocal(item, document).FirstOrDefault());
                 Debug.WriteLine(JsonArrays.First().ToString());
             }
         }
@@ -121,7 +117,30 @@ namespace ToolExplorerWPF.ViewModels.Pages
 
             return docHtml;
         }
+        #endregion
 
+
+        #region RichTextBox commands
+        private void InitRichTextBox()
+        {
+            var paragraphStyle = new Style(typeof(Paragraph));
+            paragraphStyle.Setters.Add(new Setter(Paragraph.MarginProperty, new Thickness(0)));
+
+            RichTextBox.Resources.Add(typeof(Paragraph), paragraphStyle);
+            RichTextBox.VerticalScrollBarVisibility = System.Windows.Controls.ScrollBarVisibility.Auto;
+            RichTextBox.HorizontalScrollBarVisibility = System.Windows.Controls.ScrollBarVisibility.Auto;
+        }
+        private string GetDocumentText()
+        {
+            TextRange textRange = new TextRange(RichTextBox.Document.ContentStart, RichTextBox.Document.ContentEnd);
+            return textRange.Text;
+        }
+        private void SetDocumentText(string text)
+        {
+            var textRange = new TextRange(RichTextBox.Document.ContentStart, RichTextBox.Document.ContentEnd);
+            textRange.Text = "";
+            textRange.Text = text;
+        }
         #endregion
     }
 }
