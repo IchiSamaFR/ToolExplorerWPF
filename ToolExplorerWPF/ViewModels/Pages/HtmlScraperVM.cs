@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Text.Json.Nodes;
 using System.Windows.Documents;
+using ToolExplorerWPF.Models;
 using Wpf.Ui.Controls;
 
 namespace ToolExplorerWPF.ViewModels.Pages
@@ -28,6 +29,8 @@ namespace ToolExplorerWPF.ViewModels.Pages
 
         [ObservableProperty]
         private ObservableCollection<JsonNode> _jsonArrays = new ObservableCollection<JsonNode>();
+        [ObservableProperty]
+        private ObservableCollection<JsonTreeNode> _treeNodes = new ObservableCollection<JsonTreeNode>();
 
         public void OnNavigatedTo()
         {
@@ -94,7 +97,12 @@ namespace ToolExplorerWPF.ViewModels.Pages
             var scrapper = Scraper.Build(context);
             foreach (var item in context.Scrapers)
             {
-                JsonArrays.Add(scrapper.ActionLocal(item, document).FirstOrDefault());
+                var json = scrapper.ActionLocal(item, document).FirstOrDefault();
+                JsonArrays.Add(json);
+                foreach (var node in JsonTreeModel.LoadFromJson(json.ToJsonString()))
+                {
+                    TreeNodes.Add(node);
+                }
                 Debug.WriteLine(JsonArrays.First().ToString());
             }
         }

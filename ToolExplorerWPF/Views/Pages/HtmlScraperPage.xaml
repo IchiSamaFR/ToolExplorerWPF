@@ -8,6 +8,8 @@
       Title="HtmlScraperPage"
       xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
       xmlns:astarlibrary="clr-namespace:AstarLibrary;assembly=AstarLibrary"
+      xmlns:jsonTree="clr-namespace:ToolExplorerWPF.Models"
+      xmlns:helpers="clr-namespace:ToolExplorerWPF.Helpers"
       d:DataContext="{d:DesignInstance local:HtmlScraperPage,
                                        IsDesignTimeCreatable=False}"
       d:DesignHeight="450"
@@ -18,7 +20,6 @@
       ScrollViewer.CanContentScroll="False"
       Name="Page"
       mc:Ignorable="d">
-
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="10*"/>
@@ -95,7 +96,17 @@
                     <ui:TextBlock Text="Json result" FontTypography="BodyStrong" Margin="0 0 0 10"/>
 
                     <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-                        <ui:TreeViewItem ItemsSource="{Binding ViewModel.JsonArrays}" />
+                        <TreeView ItemsSource="{Binding ViewModel.TreeNodes}">
+                            <TreeView.Resources>
+                                <HierarchicalDataTemplate DataType="{x:Type jsonTree:JsonTreeNode}" ItemsSource="{Binding Children}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding Name}" />
+                                        <TextBlock Text=" : " />
+                                        <TextBlock Text="{Binding Value}" Foreground="Gray" />
+                                    </StackPanel>
+                                </HierarchicalDataTemplate>
+                            </TreeView.Resources>
+                        </TreeView>
                     </ScrollViewer>
                 </Grid>
             </ui:Card>
