@@ -16,9 +16,9 @@ using Wpf.Ui.Controls;
 
 namespace ToolExplorerWPF.Views.Dialogs.Passwords
 {
-    public partial class PasswordFolderDialog : ContentDialog
+    public partial class PasswordItemDialog : ContentDialog
     {
-        public PasswordFolderDialog()
+        public PasswordItemDialog()
         {
             InitializeComponent();
         }

@@ -184,6 +184,7 @@ namespace ToolExplorerWPF.ViewModels.Pages
         public void OpenPasswordFolder(PasswordFolder passwordFolder)
         {
             LoadPasswordItems(passwordFolder?.Passwords ?? new List<PasswordItem>());
+            SelectedPasswordItem = null;
         }
         [RelayCommand]
         public async void AddPasswordFolder()
@@ -264,7 +265,7 @@ namespace ToolExplorerWPF.ViewModels.Pages
             var result = await _contentDialogService.ShowSimpleDialogAsync(
                 new SimpleContentDialogCreateOptions()
                 {
-                    Title = "Update folder",
+                    Title = "Remove folder",
                     Content = $"Are you sure you want to delete \"{passwordFolder.Name}\" ?",
                     PrimaryButtonText = "Remove",
                     CloseButtonText = "Cancel",
@@ -283,9 +284,6 @@ namespace ToolExplorerWPF.ViewModels.Pages
                 default:
                     break;
             }
-
-
-            LoadPasswordFolders(_container.Folders);
         }
         #endregion
 
@@ -298,7 +296,6 @@ namespace ToolExplorerWPF.ViewModels.Pages
         private void LoadPasswordItems(List<PasswordItem> lst)
         {
             PasswordItems = new ObservableCollection<PasswordItem>(lst);
-            SelectedPasswordItem = null;
         }
          
         [RelayCommand]
@@ -309,14 +306,82 @@ namespace ToolExplorerWPF.ViewModels.Pages
             SelectedNote = passwordItem?.Note;
         }
         [RelayCommand]
-        public void AddPasswordItem(PasswordItem passwordItem)
+        public async void AddPasswordItem()
         {
+            var content = new PasswordItemDialog();
+            var vm = new PasswordItemDialogVM();
+            content.DataContext = vm;
 
+            var result = await _contentDialogService.ShowSimpleDialogAsync(
+                new SimpleContentDialogCreateOptions()
+                {
+                    Title = "Add item",
+                    Content = content,
+                    PrimaryButtonText = "Add",
+                    CloseButtonText = "Cancel",
+                }
+            );
+
+            switch (result)
+            {
+                case ContentDialogResult.Primary:
+                    var newItem = vm.GetPasswordItem();
+                    SelectedPasswordFolder.Passwords.Add(newItem);
+                    _container.Save(PasswordFile);
+
+                    LoadPasswordItems(SelectedPasswordFolder.Passwords);
+                    break;
+                case ContentDialogResult.Secondary:
+                case ContentDialogResult.None:
+                default:
+                    break;
+            }
         }
         [RelayCommand]
-        public void RemovePasswordItem(PasswordItem passwordItem)
+        public async void UpdatePasswordItem(PasswordItem passwordItem)
         {
+            if (passwordItem == null)
+            {
+                return;
+            }
 
+            passwordItem.Username = SelectedUsername;
+            passwordItem.Password = SelectedPassword;
+            passwordItem.Note = SelectedNote;
+            _container.Save(PasswordFile);
+
+            LoadPasswordItems(SelectedPasswordFolder.Passwords);
+        }
+        [RelayCommand]
+        public async void RemovePasswordItem(PasswordItem passwordItem)
+        {
+            if (passwordItem == null)
+            {
+                return;
+            }
+
+            var result = await _contentDialogService.ShowSimpleDialogAsync(
+                new SimpleContentDialogCreateOptions()
+                {
+                    Title = "Remove item",
+                    Content = $"Are you sure you want to delete \"{passwordItem.Username}\" ?",
+                    PrimaryButtonText = "Remove",
+                    CloseButtonText = "Cancel",
+                }
+            );
+
+            switch (result)
+            {
+                case ContentDialogResult.Primary:
+                    SelectedPasswordFolder.Passwords.Remove(passwordItem);
+                    SelectedPasswordItem = null;
+                    LoadPasswordItems(SelectedPasswordFolder.Passwords);
+                    break;
+                case ContentDialogResult.Secondary:
+                case ContentDialogResult.None:
+                default:
+                    break;
+            }
         }
 
         [RelayCommand]
