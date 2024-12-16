@@ -17,6 +17,7 @@ namespace ToolExplorerWPF.Views.Windows
         public MainWindow(
             MainWindowVM viewModel,
             IPageService pageService,
+            IContentDialogService contentDialogService,
             INavigationService navigationService
         )
         {
@@ -28,6 +29,7 @@ namespace ToolExplorerWPF.Views.Windows
             InitializeComponent();
             SetPageService(pageService);
 
+            contentDialogService.SetContentPresenter(RootContentDialog);
             navigationService.SetNavigationControl(NavigationView);
         }
 

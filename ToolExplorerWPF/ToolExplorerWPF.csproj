@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <TargetFramework>net8.0-windows7.0</TargetFramework>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>wpfui-icon.ico</ApplicationIcon>
     <Nullable>enable</Nullable>
@@ -31,6 +31,7 @@
   <ItemGroup>
     <ProjectReference Include="..\AstarAlgo\AstarLibrary\AstarLibrary.csproj" />
     <ProjectReference Include="..\HtmlScraperLibrary\HtmlScraperLibrary\HtmlScraperLibrary.csproj" />
+    <ProjectReference Include="..\PasswordLibrary\PasswordLibrary\PasswordLibrary.csproj" />
   </ItemGroup>
 
   <ItemGroup>

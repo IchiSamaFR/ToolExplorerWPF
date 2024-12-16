@@ -4,6 +4,7 @@
 // All Rights Reserved.
 
 using System.Collections.ObjectModel;
+using Wpf.Ui;
 using Wpf.Ui.Controls;
 
 namespace ToolExplorerWPF.ViewModels.Windows
@@ -39,6 +40,12 @@ namespace ToolExplorerWPF.ViewModels.Windows
                 Content = "HTML Scraper",
                 Icon = new SymbolIcon { Symbol = SymbolRegular.DataHistogram24 },
                 TargetPageType = typeof(Views.Pages.HtmlScraperPage)
+            },
+            new NavigationViewItem()
+            {
+                Content = "Password",
+                Icon = new SymbolIcon { Symbol = SymbolRegular.DataHistogram24 },
+                TargetPageType = typeof(Views.Pages.PasswordPage)
             }
         };
 

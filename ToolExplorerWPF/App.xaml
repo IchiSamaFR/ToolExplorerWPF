@@ -12,9 +12,11 @@
             <ResourceDictionary.MergedDictionaries>
                 <ui:ThemesDictionary Theme="Dark" />
                 <ui:ControlsDictionary />
+                <ResourceDictionary Source="pack://application:,,,/ToolExplorerWPF;component/Styles/Generic.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <converter:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
             <converter:HeightFitConverter x:Key="HeightFitConverter"/>
+            <converter:TextToPassConverter x:Key="TextToPassConverter"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

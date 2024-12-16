@@ -44,6 +44,8 @@ namespace ToolExplorerWPF
                 // TaskBar manipulation
                 services.AddSingleton<ITaskBarService, TaskBarService>();
 
+                services.AddSingleton<IContentDialogService, ContentDialogService>();
+
                 // Service containing navigation, same as INavigationWindow... but without window
                 services.AddSingleton<INavigationService, NavigationService>();
 
@@ -59,6 +61,8 @@ namespace ToolExplorerWPF
                 services.AddSingleton<PathFinderVM>();
                 services.AddSingleton<HtmlScraperPage>();
                 services.AddSingleton<HtmlScraperVM>();
+                services.AddSingleton<PasswordPage>();
+                services.AddSingleton<PasswordVM>();
 
                 services.AddSingleton<SettingsPage>();
                 services.AddSingleton<SettingsVM>();
