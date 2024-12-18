@@ -14,6 +14,7 @@ namespace ToolExplorerWPF.ViewModels.Pages
         private bool _isInitialized = false;
         private PasswordContainer _container;
         private readonly IContentDialogService _contentDialogService;
+        private readonly ISnackbarService _snackbarService;
 
         // Ouverture
         [ObservableProperty]
@@ -62,9 +63,10 @@ namespace ToolExplorerWPF.ViewModels.Pages
         {
         }
 
-        public PasswordVM(IContentDialogService contentDialogService)
+        public PasswordVM(IContentDialogService contentDialogService, ISnackbarService snackbarService)
         {
             _contentDialogService = contentDialogService;
+            _snackbarService = snackbarService;
         }
 
         private void InitializeViewModel()
@@ -351,6 +353,14 @@ namespace ToolExplorerWPF.ViewModels.Pages
             _container.Save(PasswordFile);
 
             LoadPasswordItems(SelectedPasswordFolder.Passwords);
+
+            _snackbarService.Show(
+                "Update",
+                "Item saved",
+                ControlAppearance.Success,
+                new SymbolIcon(SymbolRegular.Fluent24),
+                TimeSpan.FromSeconds(3)
+            );
         }
         [RelayCommand]
         public async void RemovePasswordItem(PasswordItem passwordItem)
@@ -388,11 +398,27 @@ namespace ToolExplorerWPF.ViewModels.Pages
         public void CopyUsernameToClipboard(PasswordItem passwordItem)
         {
             Clipboard.SetText(passwordItem.Username);
+
+            _snackbarService.Show(
+                "Copy",
+                "Username copied in the clipboard",
+                ControlAppearance.Success,
+                new SymbolIcon(SymbolRegular.Fluent24),
+                TimeSpan.FromSeconds(3)
+            );
         }
         [RelayCommand]
         public void CopyPasswordToClipboard(PasswordItem passwordItem)
         {
             Clipboard.SetText(passwordItem.Password);
+
+            _snackbarService.Show(
+                string.Empty,
+                "Password copied in the clipboard",
+                ControlAppearance.Success,
+                new SymbolIcon(SymbolRegular.Fluent24),
+                TimeSpan.FromSeconds(3)
+            );
         }
         #endregion
     }
