@@ -14,3 +14,4 @@ ToolExplorerWPF is a set of libraries I developed during my personal time. I do 
 Needs to be cloned into the .sln folder:
 * [HtmlScraperLibrary](https://github.com/IchiSamaFR/HtmlScraperLibrary)
 * [AstarLibrary](https://github.com/IchiSamaFR/AstarLibrary)
+* [PasswordLibrary](https://github.com/IchiSamaFR/PasswordLibrary)
