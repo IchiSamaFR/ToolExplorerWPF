@@ -23,7 +23,7 @@ namespace ToolExplorerWPF.Views.Windows
         )
         {
             ViewModel = viewModel;
-            DataContext = this;
+            DataContext = ViewModel;
 
             SystemThemeWatcher.Watch(this);
 

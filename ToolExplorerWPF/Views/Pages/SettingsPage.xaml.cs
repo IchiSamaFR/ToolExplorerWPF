@@ -15,7 +15,7 @@ namespace ToolExplorerWPF.Views.Pages
         public SettingsPage(SettingsVM viewModel)
         {
             ViewModel = viewModel;
-            DataContext = this;
+            DataContext = ViewModel;
 
             InitializeComponent();
         }

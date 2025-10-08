@@ -1,7 +1,7 @@
 ﻿using System.Globalization;
 using System.Windows.Data;
 
-namespace ToolExplorerWPF.Helpers
+namespace ToolExplorerWPF.Helpers.Converters
 {
     public class BooleanInvertConverter : IValueConverter
     {

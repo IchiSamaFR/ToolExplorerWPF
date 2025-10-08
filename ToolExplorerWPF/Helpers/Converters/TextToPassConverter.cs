@@ -1,17 +1,21 @@
 ﻿using System.Globalization;
 using System.Windows.Data;
 
-namespace ToolExplorerWPF.Helpers
+namespace ToolExplorerWPF.Helpers.Converters
 {
-    public class BooleanToVisibilityConverter : IValueConverter
+    public class TextToPassConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (parameter != null && parameter.ToString().ToLower() == "invert")
+            if(value is string str)
             {
-                return value as bool? == false ? Visibility.Visible : Visibility.Collapsed;
+                if(parameter is char character)
+                {
+                    return new string(character, str.Length);
+                }
+                return new string('*', str.Length);
             }
-            return value as bool? == true ? Visibility.Visible : Visibility.Collapsed;
+            return value;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

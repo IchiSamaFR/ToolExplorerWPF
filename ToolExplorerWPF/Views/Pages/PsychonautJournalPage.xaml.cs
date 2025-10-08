@@ -4,13 +4,13 @@ using Wpf.Ui.Controls;
 namespace ToolExplorerWPF.Views.Pages
 {
     /// <summary>
-    /// Logique d'interaction pour PathFinderView.xaml
+    /// Logique d'interaction pour PsychonautJournalPage.xaml
     /// </summary>
-    public partial class PathFinderPage : INavigableView<PathFinderVM>
+    public partial class PsychonautJournalPage : INavigableView<PsychonautJournalVM>
     {
-        public PathFinderVM ViewModel { get; }
+        public PsychonautJournalVM ViewModel { get; }
 
-        public PathFinderPage(PathFinderVM viewModel)
+        public PsychonautJournalPage(PsychonautJournalVM viewModel)
         {
             ViewModel = viewModel;
             DataContext = ViewModel;

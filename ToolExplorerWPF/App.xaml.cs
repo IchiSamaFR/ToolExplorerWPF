@@ -64,6 +64,8 @@ namespace ToolExplorerWPF
                 services.AddSingleton<HtmlScraperVM>();
                 services.AddSingleton<PasswordPage>();
                 services.AddSingleton<PasswordVM>();
+                services.AddSingleton<PsychonautJournalPage>();
+                services.AddSingleton<PsychonautJournalVM>();
 
                 services.AddSingleton<SettingsPage>();
                 services.AddSingleton<SettingsVM>();

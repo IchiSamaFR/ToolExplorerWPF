@@ -27,7 +27,7 @@ namespace ToolExplorerWPF.Views.Pages
         public HtmlScraperPage(HtmlScraperVM viewModel)
         {
             ViewModel = viewModel;
-            DataContext = this;
+            DataContext = ViewModel;
 
             InitializeComponent();
         }

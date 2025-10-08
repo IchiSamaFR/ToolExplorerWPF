@@ -3,7 +3,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
-    xmlns:converter="clr-namespace:ToolExplorerWPF.Helpers"
+    xmlns:converter="clr-namespace:ToolExplorerWPF.Helpers.Converters"
     DispatcherUnhandledException="OnDispatcherUnhandledException"
     Exit="OnExit"
     Startup="OnStartup">
@@ -14,9 +14,13 @@
                 <ui:ControlsDictionary />
                 <ResourceDictionary Source="pack://application:,,,/ToolExplorerWPF;component/Styles/Generic.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <converter:UnixEpochToDateTimeConverter x:Key="UnixEpochToDateTimeConverter" />
+            <converter:IngestionsSummaryConverter x:Key="IngestionsSummaryConverter" />
+            <converter:EnumToBooleanConverter x:Key="EnumToBooleanConverter" />
             <converter:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
             <converter:HeightFitConverter x:Key="HeightFitConverter"/>
             <converter:TextToPassConverter x:Key="TextToPassConverter"/>
+            
         </ResourceDictionary>
     </Application.Resources>
 </Application>

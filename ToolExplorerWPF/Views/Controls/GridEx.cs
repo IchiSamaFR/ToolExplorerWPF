@@ -102,11 +102,11 @@ namespace ToolExplorerWPF.Views.Controls
         #endregion
 
         #region ItemSource Property
-        public IEnumerable<object> ItemsSource
+        public IList ItemsSource
         {
             get
             {
-                return (IEnumerable<object>)GetValue(ItemSourceProperty);
+                return (IList)GetValue(ItemSourceProperty);
             }
             set
             {
@@ -114,7 +114,7 @@ namespace ToolExplorerWPF.Views.Controls
             }
         }
 
-        public static readonly DependencyProperty ItemSourceProperty = DependencyProperty.RegisterAttached("ItemsSource", typeof(IEnumerable<object>), typeof(GridEx), new PropertyMetadata(null, ItemsSourceChanged));
+        public static readonly DependencyProperty ItemSourceProperty = DependencyProperty.RegisterAttached("ItemsSource", typeof(IList), typeof(GridEx), new PropertyMetadata(null, ItemsSourceChanged));
         public static void ItemsSourceChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e)
         {
             if (!(obj is GridEx) || e.NewValue == null)
@@ -131,20 +131,20 @@ namespace ToolExplorerWPF.Views.Controls
             if (ItemsSource == null)
                 return;
 
-            if (_contentControls.Count > ItemsSource.Count())
+            if (_contentControls.Count > ItemsSource.Count)
             {
                 var lst = new List<UIElement>();
 
-                for (int i = _contentControls.Count - 1; i >= ItemsSource.Count(); i--)
+                for (int i = _contentControls.Count - 1; i >= ItemsSource.Count; i--)
                 {
                     lst.Add(Children[i]);
                     _contentControls.RemoveAt(i);
                 }
                 RemoveChildren(lst);
             }
-            if (_contentControls.Count < ItemsSource.Count())
+            if (_contentControls.Count < ItemsSource.Count)
             {
-                for (int i = _contentControls.Count; i < ItemsSource.Count(); i++)
+                for (int i = _contentControls.Count; i < ItemsSource.Count; i++)
                 {
                     var control = new ContentControl()
                     {

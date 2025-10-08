@@ -3,6 +3,7 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:vm="clr-namespace:ToolExplorerWPF.ViewModels.Pages"
       xmlns:local="clr-namespace:ToolExplorerWPF.Views.Pages"
       xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
       Title="HtmlScraperPage"
@@ -10,7 +11,7 @@
       xmlns:astarlibrary="clr-namespace:AstarLibrary;assembly=AstarLibrary"
       xmlns:jsonTree="clr-namespace:ToolExplorerWPF.Models"
       xmlns:helpers="clr-namespace:ToolExplorerWPF.Helpers"
-      d:DataContext="{d:DesignInstance local:HtmlScraperPage,
+      d:DataContext="{d:DesignInstance vm:HtmlScraperVM,
                                        IsDesignTimeCreatable=False}"
       d:DesignHeight="450"
       d:DesignWidth="800"
@@ -27,7 +28,7 @@
             <ColumnDefinition MinWidth="300"/>
         </Grid.ColumnDefinitions>
         <ui:Card VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Padding="0" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch">
-            <ContentPresenter Content="{Binding ViewModel.WebView}"/>
+            <ContentPresenter Content="{Binding WebView}"/>
         </ui:Card>
         <GridSplitter Grid.Column="1" Width="2" Margin="5 0 5 0"
               HorizontalAlignment="Center"
@@ -42,18 +43,18 @@
             <ui:Card VerticalContentAlignment="Stretch">
                 <StackPanel Orientation="Vertical" CanVerticallyScroll="True" VerticalAlignment="Top">
                     <ui:TextBlock Text="Config" FontTypography="BodyStrong" Margin="0 0 0 10"/>
-                    <TextBox Grid.Column="1" Text="{Binding ViewModel.Url, Mode=TwoWay}"/>
+                    <TextBox Grid.Column="1" Text="{Binding Url, Mode=TwoWay}"/>
                     <StackPanel Orientation="Horizontal">
                         <ui:Button
                             Grid.Column="0" Margin="0 10 0 0"
                             Appearance="Secondary"
-                            Command="{Binding ViewModel.LoadLocalHtmlCommand, Mode=OneWay}"
+                            Command="{Binding LoadLocalHtmlCommand, Mode=OneWay}"
                             Content="Load local"
                             Icon="Fluent24" />
                         <ui:Button
                             Grid.Column="0" Margin="5 10 0 0"
                             Appearance="Primary"
-                            Command="{Binding ViewModel.LoadPageCommand, Mode=OneWay}"
+                            Command="{Binding LoadPageCommand, Mode=OneWay}"
                             Content="Apply"
                             Icon="Fluent24" />
                     </StackPanel>
@@ -68,19 +69,19 @@
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
                     <ui:TextBlock Text="Xaml config" FontTypography="BodyStrong" Margin="0 0 0 10"/>
-                    <ContentControl Content="{Binding ViewModel.RichTextBox}" Grid.Row="1"/>
+                    <ContentControl Content="{Binding RichTextBox}" Grid.Row="1"/>
 
                     <StackPanel Orientation="Horizontal" Grid.Row="2">
                         <ui:Button
                             Grid.Column="0" Margin="0 10 0 0"
                             Appearance="Secondary"
-                            Command="{Binding ViewModel.LoadXMLConfigHtmlCommand, Mode=OneWay}"
+                            Command="{Binding LoadXMLConfigHtmlCommand, Mode=OneWay}"
                             Content="Load config"
                             Icon="Fluent24" />
                         <ui:Button
                             Grid.Column="0" Margin="5 10 0 0"
                             Appearance="Primary"
-                            Command="{Binding ViewModel.ApplyXMLConfigLocalCommand, Mode=OneWay}"
+                            Command="{Binding ApplyXMLConfigLocalCommand, Mode=OneWay}"
                             Content="Apply local"
                             Icon="Fluent24" />
                     </StackPanel>
@@ -96,7 +97,7 @@
                     <ui:TextBlock Text="Json result" FontTypography="BodyStrong" Margin="0 0 0 10"/>
 
                     <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-                        <TreeView ItemsSource="{Binding ViewModel.TreeNodes}">
+                        <TreeView ItemsSource="{Binding TreeNodes}">
                             <TreeView.Resources>
                                 <HierarchicalDataTemplate DataType="{x:Type jsonTree:JsonTreeNode}" ItemsSource="{Binding Children}">
                                     <StackPanel Orientation="Horizontal">

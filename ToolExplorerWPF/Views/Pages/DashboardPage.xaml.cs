@@ -15,7 +15,7 @@ namespace ToolExplorerWPF.Views.Pages
         public DashboardPage(DashboardVM viewModel)
         {
             ViewModel = viewModel;
-            DataContext = this;
+            DataContext = ViewModel;
 
             InitializeComponent();
         }

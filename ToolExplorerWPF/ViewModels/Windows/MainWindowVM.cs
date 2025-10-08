@@ -26,26 +26,32 @@ namespace ToolExplorerWPF.ViewModels.Windows
             new NavigationViewItem()
             {
                 Content = "Perlin noise",
-                Icon = new SymbolIcon { Symbol = SymbolRegular.DataHistogram24 },
+                Icon = new SymbolIcon { Symbol = SymbolRegular.Blur24 },
                 TargetPageType = typeof(Views.Pages.NoisePage)
             },
             new NavigationViewItem()
             {
                 Content = "Path finder",
-                Icon = new SymbolIcon { Symbol = SymbolRegular.DataHistogram24 },
+                Icon = new SymbolIcon { Symbol = SymbolRegular.Location24 },
                 TargetPageType = typeof(Views.Pages.PathFinderPage)
             },
             new NavigationViewItem()
             {
                 Content = "HTML Scraper",
-                Icon = new SymbolIcon { Symbol = SymbolRegular.DataHistogram24 },
+                Icon = new SymbolIcon { Symbol = SymbolRegular.Globe24 },
                 TargetPageType = typeof(Views.Pages.HtmlScraperPage)
             },
             new NavigationViewItem()
             {
                 Content = "Password",
-                Icon = new SymbolIcon { Symbol = SymbolRegular.DataHistogram24 },
+                Icon = new SymbolIcon { Symbol = SymbolRegular.Password24 },
                 TargetPageType = typeof(Views.Pages.PasswordPage)
+            },
+            new NavigationViewItem()
+            {
+                Content = "Psychonaut Journal",
+                Icon = new SymbolIcon { Symbol = SymbolRegular.BookOpen24 },
+                TargetPageType = typeof(Views.Pages.PsychonautJournalPage)
             }
         };
 

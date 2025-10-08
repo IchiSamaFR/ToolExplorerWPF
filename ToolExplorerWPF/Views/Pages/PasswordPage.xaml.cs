@@ -27,7 +27,7 @@ namespace ToolExplorerWPF.Views.Pages
         public PasswordPage(PasswordVM viewModel)
         {
             ViewModel = viewModel;
-            DataContext = this;
+            DataContext = ViewModel;
 
             InitializeComponent();
         }

@@ -6,7 +6,7 @@
     xmlns:local="clr-namespace:ToolExplorerWPF.Views.Windows"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
-    Title="{Binding ViewModel.ApplicationTitle, Mode=OneWay}"
+    Title="{Binding ApplicationTitle, Mode=OneWay}"
     Width="1100"
     Height="650"
     d:DataContext="{d:DesignInstance local:MainWindow,
@@ -35,7 +35,7 @@
         </Grid.RowDefinitions>
         <ui:TitleBar
             x:Name="TitleBar"
-            Title="{Binding ViewModel.ApplicationTitle}"
+            Title="{Binding ApplicationTitle}"
             Grid.Row="0">
             <ui:TitleBar.Icon>
                 <ui:ImageIcon Source="pack://application:,,,/Assets/wpfui-icon-256.png" />
@@ -46,10 +46,10 @@
             Grid.Row="1"
             x:Name="NavigationView"
             Padding="42,32,42,32"
-            FooterMenuItemsSource="{Binding ViewModel.FooterMenuItems, Mode=OneWay}"
+            FooterMenuItemsSource="{Binding FooterMenuItems, Mode=OneWay}"
             FrameMargin="0"
             IsPaneToggleVisible="True"
-            MenuItemsSource="{Binding ViewModel.MenuItems, Mode=OneWay}"
+            MenuItemsSource="{Binding MenuItems, Mode=OneWay}"
             OpenPaneLength="210"
             PaneDisplayMode="Left"
             IsBackButtonVisible="Collapsed">
