@@ -20,6 +20,9 @@
             <converter:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
             <converter:HeightFitConverter x:Key="HeightFitConverter"/>
             <converter:TextToPassConverter x:Key="TextToPassConverter"/>
+            <converter:ListDistinctConverter x:Key="ListDistinctConverter"/>
+            <converter:ListDistinctNotEmptyConverter x:Key="ListDistinctNotEmptyConverter"/>
+            <converter:SubstanceColorsConverter x:Key="SubstanceColorsConverter"/>
             
         </ResourceDictionary>
     </Application.Resources>

@@ -5,8 +5,9 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     xmlns:vm="clr-namespace:ToolExplorerWPF.ViewModels.Pages"
-    xmlns:local="clr-namespace:ToolExplorerWPF.Views.Pages" xmlns:controls="clr-namespace:ToolExplorerWPF.Views.Controls"
-      mc:Ignorable="d" 
+    xmlns:local="clr-namespace:ToolExplorerWPF.Views.Pages"
+    xmlns:controls="clr-namespace:ToolExplorerWPF.Views.Controls.PsychonautJournal"
+    mc:Ignorable="d" 
     d:DataContext="{d:DesignInstance vm:PsychonautJournalVM,
         IsDesignTimeCreatable=False}"
     d:DesignHeight="450" d:DesignWidth="800"

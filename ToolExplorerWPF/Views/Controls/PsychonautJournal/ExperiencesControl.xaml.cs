@@ -4,7 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using PsychonautJournalLibrary.Entities.Interfaces;
 
-namespace ToolExplorerWPF.Views.Controls
+namespace ToolExplorerWPF.Views.Controls.PsychonautJournal
 {
     /// <summary>
     /// Logique d'interaction pour ExperiencesControl.xaml
