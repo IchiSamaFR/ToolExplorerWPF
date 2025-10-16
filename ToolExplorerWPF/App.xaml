@@ -17,9 +17,14 @@
             <converter:UnixEpochToDateTimeConverter x:Key="UnixEpochToDateTimeConverter" />
             <converter:IngestionsSummaryConverter x:Key="IngestionsSummaryConverter" />
             <converter:EnumToBooleanConverter x:Key="EnumToBooleanConverter" />
+            
             <converter:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+            <converter:BooleanDataConverter x:Key="BooleanDataConverter"/>
+            
             <converter:HeightFitConverter x:Key="HeightFitConverter"/>
+            
             <converter:TextToPassConverter x:Key="TextToPassConverter"/>
+            
             <converter:ListDistinctConverter x:Key="ListDistinctConverter"/>
             <converter:ListDistinctNotEmptyConverter x:Key="ListDistinctNotEmptyConverter"/>
             <converter:SubstanceColorsConverter x:Key="SubstanceColorsConverter"/>

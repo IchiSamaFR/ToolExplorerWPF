@@ -1,0 +1,79 @@
+﻿<UserControl x:Class="ToolExplorerWPF.Views.Controls.HtmlScraper.DetachedParametersView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:local="clr-namespace:ToolExplorerWPF.Views.Controls.HtmlScraper"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    xmlns:jsonTree="clr-namespace:ToolExplorerWPF.Models"
+    mc:Ignorable="d" 
+    d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <ui:Card Grid.Column="0"
+                VerticalAlignment="Stretch"
+                VerticalContentAlignment="Stretch">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <ui:TextBlock Text="Xaml config" FontTypography="BodyStrong" Margin="0 0 0 10"/>
+                <ContentControl Content="{Binding RichTextBox}" Grid.Row="1"/>
+
+                <StackPanel Orientation="Horizontal" Grid.Row="2">
+                    <ui:Button
+                            Grid.Column="0" Margin="0 10 0 0"
+                            Appearance="Secondary"
+                            Command="{Binding LoadXMLConfigHtmlCommand, Mode=OneWay}"
+                            Content="Load config"
+                            Icon="Fluent24" />
+                    <ui:Button
+                            Grid.Column="0" Margin="5 10 0 0"
+                            Appearance="Primary"
+                            Command="{Binding ApplyXMLConfigLocalCommand, Mode=OneWay}"
+                            Content="Apply local"
+                            Icon="Fluent24" />
+                </StackPanel>
+            </Grid>
+        </ui:Card>
+
+        <GridSplitter Grid.Column="1"
+            Width="2" Margin="5 0 5 0"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Stretch"
+            Background="{DynamicResource ApplicationBackgroundBrush}"/>
+        
+        <ui:Card Grid.Column="2"
+            VerticalAlignment="Stretch"
+            VerticalContentAlignment="Stretch">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <ui:TextBlock Text="Json result" FontTypography="BodyStrong" Margin="0 0 0 10"/>
+
+                <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                    <TreeView ItemsSource="{Binding TreeNodes}">
+                        <TreeView.Resources>
+                            <HierarchicalDataTemplate DataType="{x:Type jsonTree:JsonTreeNode}" ItemsSource="{Binding Children}">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding Name}" />
+                                    <TextBlock Text=" : " />
+                                    <TextBlock Text="{Binding Value}" Foreground="Gray" />
+                                </StackPanel>
+                            </HierarchicalDataTemplate>
+                        </TreeView.Resources>
+                    </TreeView>
+                </ScrollViewer>
+            </Grid>
+        </ui:Card>
+    </Grid>
+</UserControl>

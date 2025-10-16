@@ -8,7 +8,9 @@ using System.Diagnostics;
 using System.IO;
 using System.Text.Json.Nodes;
 using System.Windows.Documents;
+using ToolExplorerWPF.Helpers.Tools;
 using ToolExplorerWPF.Models;
+using ToolExplorerWPF.Views.Controls.HtmlScraper;
 using Wpf.Ui.Controls;
 
 namespace ToolExplorerWPF.ViewModels.Pages
@@ -22,6 +24,8 @@ namespace ToolExplorerWPF.ViewModels.Pages
         [ObservableProperty]
         private RichTextBox _richTextBox = new RichTextBox();
 
+        [ObservableProperty]
+        private bool _isDetached;
         [ObservableProperty]
         private string _url;
         [ObservableProperty]
@@ -104,6 +108,24 @@ namespace ToolExplorerWPF.ViewModels.Pages
                     TreeNodes.Add(node);
                 }
                 Debug.WriteLine(JsonArrays.First().ToString());
+            }
+        }
+
+        [RelayCommand]
+        public void DetachView()
+        {
+            IsDetached = !IsDetached;
+
+            if (IsDetached)
+            {
+                WindowHelper.CreateAndShowDetachedWindow(
+                    control: new DetachedParametersView(),
+                    dataContext: this,
+                    title: "Paramètres détachés - HTML Scraper",
+                    width: 800,
+                    height: 450,
+                    onClosed: (window) => IsDetached = false
+                );
             }
         }
 
