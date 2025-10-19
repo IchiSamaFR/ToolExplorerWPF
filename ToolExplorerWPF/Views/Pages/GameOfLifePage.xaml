@@ -11,7 +11,7 @@
       mc:Ignorable="d" 
       d:DataContext="{d:DesignInstance vm:GameOfLifeVM,
                                        IsDesignTimeCreatable=False}"
-      d:DesignHeight="550"
+      d:DesignHeight="800"
       d:DesignWidth="800"
       x:Name="Page"
       Title="GameOfLifePage">
@@ -21,90 +21,47 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="300"/>
         </Grid.ColumnDefinitions>
-        <ui:Card VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" Name="content">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
-                <controls:ArrayGridEx ArraySource="{Binding Cells}">
-                    <controls:ArrayGridEx.ItemTemplate>
-                        <DataTemplate>
-                            <Button VerticalAlignment="Stretch"
-		                        HorizontalAlignment="Stretch"
-		                        Margin="1"
-		                        Command="{Binding DataContext.ApplyLifeCommand, ElementName=Page}"
-		                        CommandParameter="{Binding .}">
-                                <Button.Style>
-                                    <Style TargetType="Button">
-                                        <Setter Property="Background" Value="White"/>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsAlive}" Value="True">
-                                                <Setter Property="Background" Value="Black"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Button.Style>
-                            </Button>
-                        </DataTemplate>
-                    </controls:ArrayGridEx.ItemTemplate>
-                </controls:ArrayGridEx>
-
-                <Grid Grid.Row="1"
-                    Margin="0 10 0 0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="50"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-                    <Slider HorizontalAlignment="Stretch"
-                            VerticalAlignment="Center"
-                            IsSnapToTickEnabled="True"
-                            Minimum="0"
-                            Maximum="{Binding GameEngine.TotalGenerations}"
-                            TickFrequency="1"
-                            Value="{Binding GameEngine.Generation, Mode=OneWay}"  Margin="0 0 10 0"/>
-                    <TextBox Grid.Column="1" Text="{Binding GameEngine.Generation, Mode=OneWay}"/>
-
-                    <StackPanel Grid.Column="2"
-                                Orientation="Horizontal"
-                                HorizontalAlignment="Right">
-                        <ui:Button
-                            Margin="10 0 0 0"
-                            Appearance="Success"
-                            Command="{Binding StartPauseCommand}"
-                            Visibility="{Binding IsRunning, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=invert}"
-                            Content="Play" />
-                        <ui:Button
-                            Margin="10 0 0 0"
-                            Appearance="Caution"
-                            Command="{Binding StartPauseCommand}"
-                            Visibility="{Binding IsRunning, Converter={StaticResource BooleanToVisibilityConverter}}"
-                            Content="Pause" />
-                        <ui:Button
-                            Margin="10 0 0 0"
-                            Appearance="Danger"
-                            Command="{Binding ResetCommand}"
-                            IsEnabled="{Binding IsStarted}"
-                            Content="Reset" />
-                        <ui:Button Grid.Column="2"
-                            Margin="10 0 0 0"
-                            Appearance="Primary"
-                            Command="{Binding NextAgeCommand}"
-                            IsEnabled="{Binding IsRunning, Converter={StaticResource BooleanInvertConverter}}"
-                            Content="Next" />
-                    </StackPanel>
-                </Grid>
-            </Grid>
+        <ui:Card VerticalAlignment="Stretch"
+            VerticalContentAlignment="Stretch">
+            <controls:ArrayGridEx ArraySource="{Binding Cells}">
+                <controls:ArrayGridEx.ItemTemplate>
+                    <DataTemplate>
+                        <Button VerticalAlignment="Stretch"
+		                    HorizontalAlignment="Stretch"
+		                    Margin="1"
+		                    Command="{Binding DataContext.ApplyLifeCommand, ElementName=Page}"
+		                    CommandParameter="{Binding .}">
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Background" Value="White"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsAlive}" Value="True">
+                                            <Setter Property="Background" Value="Black"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                    </DataTemplate>
+                </controls:ArrayGridEx.ItemTemplate>
+            </controls:ArrayGridEx>
         </ui:Card>
 
-        <StackPanel Orientation="Vertical"
+        <Grid ScrollViewer.CanContentScroll="True"
             Grid.Column="1"
             Margin="10,0,0,0">
-            <ui:Card
-                IsEnabled="{Binding IsStarted, Converter={StaticResource BooleanInvertConverter}}">
-                <StackPanel Orientation="Vertical" CanVerticallyScroll="True" VerticalAlignment="Top">
-                    <ui:TextBlock Text="Parameters" FontTypography="BodyStrong" Margin="0 0 0 10"/>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <Expander Grid.Row="0">
+                <Expander.Header>
+                    <ui:TextBlock Text="Grid" FontTypography="BodyStrong"/>
+                </Expander.Header>
+                <StackPanel Orientation="Vertical"
+                    IsEnabled="{Binding IsStarted, Converter={StaticResource BooleanInvertConverter}}">
                     <ui:TextBlock Text="Height"/>
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -117,9 +74,9 @@
                             Minimum="10"
                             Maximum="100"
                             TickFrequency="1"
-                            Value="{Binding Rows, Mode=TwoWay}"  Margin="0 0 10 0"/>
+                            Value="{Binding Width, Mode=TwoWay}"  Margin="0 0 10 0"/>
                         <TextBox Grid.Column="1"
-                            Text="{Binding Rows, Mode=TwoWay}"/>
+                            Text="{Binding Width, Mode=TwoWay}"/>
                     </Grid>
                     <ui:TextBlock Text="Width"/>
                     <Grid>
@@ -133,23 +90,8 @@
                             Minimum="10"
                             Maximum="100"
                             TickFrequency="1"
-                            Value="{Binding Columns, Mode=TwoWay}"  Margin="0 0 10 0"/>
-                        <TextBox Grid.Column="1" Text="{Binding Columns, Mode=TwoWay}"/>
-                    </Grid>
-                    <ui:TextBlock Text="Speed delay"/>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="50"/>
-                        </Grid.ColumnDefinitions>
-                        <Slider HorizontalAlignment="Stretch"
-                            VerticalAlignment="Center"
-                            IsSnapToTickEnabled="True"
-                            Minimum="10"
-                            Maximum="500"
-                            TickFrequency="10"
-                            Value="{Binding SpeedDelay, Mode=TwoWay}"  Margin="0 0 10 0"/>
-                        <TextBox Grid.Column="1" Text="{Binding SpeedDelay, Mode=TwoWay}"/>
+                            Value="{Binding Height, Mode=TwoWay}"  Margin="0 0 10 0"/>
+                        <TextBox Grid.Column="1" Text="{Binding Height, Mode=TwoWay}"/>
                     </Grid>
 
                     <StackPanel Orientation="Horizontal"
@@ -158,15 +100,19 @@
                         <ui:Button
                             Margin="5 0 0 0"
                             Appearance="Primary"
-                            Command="{Binding GenerateCommand}"
+                            Command="{Binding ClearCommand}"
                             Content="Clear" />
                     </StackPanel>
                 </StackPanel>
-            </ui:Card>
-            <ui:Card Margin="0 10 0 0"
-                IsEnabled="{Binding IsStarted, Converter={StaticResource BooleanInvertConverter}}">
-                <StackPanel Orientation="Vertical" CanVerticallyScroll="True" VerticalAlignment="Top">
-                    <ui:TextBlock Text="Rules" FontTypography="BodyStrong" Margin="0 0 0 10"/>
+            </Expander>
+            <Expander Grid.Row="1"
+                      Margin="0,10,0,0">
+                <Expander.Header>
+                    <ui:TextBlock Text="Rules" FontTypography="BodyStrong"/>
+                </Expander.Header>
+
+                <StackPanel Orientation="Vertical"
+                    IsEnabled="{Binding IsStarted, Converter={StaticResource BooleanInvertConverter}}">
                     <ui:TextBlock Text="Minimum survival"/>
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -222,8 +168,76 @@
                             Content="Default" />
                     </StackPanel>
                 </StackPanel>
-            </ui:Card>
+            </Expander>
 
-        </StackPanel>
+            <Expander Grid.Row="2"
+                Margin="0 10 0 0"
+                IsExpanded="True">
+                <Expander.Header>
+                    <ui:TextBlock Text="Generation" FontTypography="BodyStrong"/>
+                </Expander.Header>
+                <StackPanel Orientation="Vertical" CanVerticallyScroll="True" VerticalAlignment="Top">
+                    <ui:TextBlock Text="Speed"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="50"/>
+                        </Grid.ColumnDefinitions>
+                        <Slider HorizontalAlignment="Stretch"
+				            VerticalAlignment="Center"
+				            IsSnapToTickEnabled="True"
+				            Minimum="10"
+				            Maximum="500"
+				            TickFrequency="10"
+				            Value="{Binding SpeedDelay, Mode=TwoWay}"  Margin="0 0 10 0"/>
+                        <TextBox Grid.Column="1" Text="{Binding SpeedDelay, Mode=TwoWay}"/>
+                    </Grid>
+
+                    <ui:TextBlock Text="Generation"/>
+                    <Grid Margin="0 10 0 0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="50"/>
+                        </Grid.ColumnDefinitions>
+                        <Slider HorizontalAlignment="Stretch"
+				            VerticalAlignment="Center"
+				            IsSnapToTickEnabled="True"
+				            Minimum="0"
+				            Maximum="{Binding TotalGenerations}"
+				            TickFrequency="1"
+				            Value="{Binding Generation}"  Margin="0 0 10 0"/>
+                        <TextBox Grid.Column="1" Text="{Binding Generation}"/>
+                    </Grid>
+                    <StackPanel Margin="0 10 0 0"
+			            Orientation="Horizontal"
+			            HorizontalAlignment="Right">
+                        <ui:Button
+				            Margin="10 0 0 0"
+				            Appearance="Success"
+				            Command="{Binding StartPauseCommand}"
+				            Visibility="{Binding IsRunning, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=invert}"
+				            Content="Play" />
+                        <ui:Button
+				            Margin="10 0 0 0"
+				            Appearance="Caution"
+				            Command="{Binding StartPauseCommand}"
+				            Visibility="{Binding IsRunning, Converter={StaticResource BooleanToVisibilityConverter}}"
+				            Content="Pause" />
+                        <ui:Button
+				            Margin="10 0 0 0"
+				            Appearance="Danger"
+				            Command="{Binding ResetCommand}"
+				            IsEnabled="{Binding IsStarted}"
+				            Content="Reset" />
+                        <ui:Button Grid.Column="2"
+				            Margin="10 0 0 0"
+				            Appearance="Primary"
+				            Command="{Binding NextGenerationCommand}"
+				            IsEnabled="{Binding IsRunning, Converter={StaticResource BooleanInvertConverter}}"
+				            Content="Next" />
+                    </StackPanel>
+                </StackPanel>
+            </Expander>
+        </Grid>
     </Grid>
 </Page>

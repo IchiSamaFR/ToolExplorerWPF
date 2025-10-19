@@ -45,7 +45,7 @@
         <ui:NavigationView
             Grid.Row="1"
             x:Name="NavigationView"
-            Padding="42,32,42,32"
+            Padding="22"
             FooterMenuItemsSource="{Binding FooterMenuItems, Mode=OneWay}"
             FrameMargin="0"
             IsPaneToggleVisible="True"
