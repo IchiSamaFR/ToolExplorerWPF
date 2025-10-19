@@ -1,21 +1,10 @@
-﻿using AstarLibrary;
-using GameOfLifeLibrary.Engines;
+﻿using GameOfLifeLibrary.Engines;
 using GameOfLifeLibrary.Helpers;
 using GameOfLifeLibrary.Models;
-using GameOfLifeLibrary.Rules;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel.DataAnnotations;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Documents;
-using System.Xml.Linq;
+using GameOfLifeLibrary.Models.Cells;
+using GameOfLifeLibrary.Models.Rules;
+using GameOfLifeLibrary.Patterns;
 using ToolExplorerWPF.Models.GameOfLife;
-using ToolExplorerWPF.Models.PathFinder;
-using ToolExplorerWPF.Services;
 using Wpf.Ui.Controls;
 
 namespace ToolExplorerWPF.ViewModels.Pages
@@ -46,11 +35,19 @@ namespace ToolExplorerWPF.ViewModels.Pages
         [ObservableProperty]
         private int _birthNeighbors = 3;
 
+        // Patterns
+        [ObservableProperty]
+        private Pattern? _selectedPattern;
+        [ObservableProperty]
+        private List<Pattern> _patterns = new();
+
         // Generation
         [ObservableProperty]
         private bool _isStarted = false;
         [ObservableProperty]
         private bool _isRunning = false;
+        [ObservableProperty]
+        private ICell[,] _cells = new ICell[0, 0];
 
         public int Generation
         {
@@ -65,7 +62,7 @@ namespace ToolExplorerWPF.ViewModels.Pages
                     return;
                 }
                 GameEngine.GoToGeneration(Math.Min(Math.Max(value, 0), TotalGenerations));
-                OnPropertyChanged(nameof(GameEngine));
+                OnPropertyChanged(nameof(Generation));
             }
         }
         public int TotalGenerations
@@ -76,10 +73,8 @@ namespace ToolExplorerWPF.ViewModels.Pages
             }
         }
 
-        // Collection observable pour le binding
-        [ObservableProperty]
-        private ICell[,] _cells = new ICell[0, 0];
 
+        // Gestion des changements des valeurs avec délai
         partial void OnWidthChanged(int value)
         {
             if (_cancellationWidthToken != null)
@@ -103,7 +98,7 @@ namespace ToolExplorerWPF.ViewModels.Pages
         }
         partial void OnHeightChanged(int value)
         {
-            if(_cancellationHeightToken != null)
+            if (_cancellationHeightToken != null)
             {
                 _cancellationHeightToken.Cancel();
             }
@@ -149,7 +144,6 @@ namespace ToolExplorerWPF.ViewModels.Pages
             if (!_isInitialized)
                 InitializeViewModel();
         }
-
         public void OnNavigatedFrom()
         {
         }
@@ -158,10 +152,10 @@ namespace ToolExplorerWPF.ViewModels.Pages
         {
             _isInitialized = true;
             Generate();
+            ImportPatterns();
         }
 
-        [RelayCommand]
-        public void Generate()
+        private void Generate()
         {
             IsStarted = false;
 
@@ -176,14 +170,13 @@ namespace ToolExplorerWPF.ViewModels.Pages
         [RelayCommand]
         public void ApplyLife(ICell node)
         {
-            node.IsAlive = !node.IsAlive;
-        }
+            if (SelectedPattern != null)
+            {
+                PatternLoader.ApplyPattern(GameEngine.Grid, SelectedPattern, node.X, node.Y);
+                return;
+            }
 
-        [RelayCommand]
-        public void ApplyRules()
-        {
-            var rules = new ModulableRules(MinSurvivalNeighbors, MaxSurvivalNeighbors, BirthNeighbors);
-            GameEngine.SetRules(rules);
+            node.IsAlive = !node.IsAlive;
         }
 
         [RelayCommand]
@@ -196,12 +189,29 @@ namespace ToolExplorerWPF.ViewModels.Pages
             GameEngine.SetRules(rules);
         }
 
+        // Patterns
+        [RelayCommand]
+        public void UnselectPattern()
+        {
+            SelectedPattern = null;
+        }
+
+        [RelayCommand]
+        public void ImportPatterns()
+        {
+            Patterns = RlePatternImporter.LoadAllRlePatterns();
+        }
+
+        // Commandes de contrôle du jeu
         [RelayCommand]
         public void Reset()
         {
             IsRunning = false;
             IsStarted = false;
             GameEngine.Reset();
+            OnPropertyChanged(nameof(Generation));
+            OnPropertyChanged(nameof(TotalGenerations));
+            OnPropertyChanged(nameof(Cells));
         }
 
         [RelayCommand]
@@ -217,11 +227,7 @@ namespace ToolExplorerWPF.ViewModels.Pages
         [RelayCommand]
         public void Clear()
         {
-            IsRunning = false;
-            GameEngine.Reset();
-            OnPropertyChanged(nameof(Generation));
-            OnPropertyChanged(nameof(TotalGenerations));
-            OnPropertyChanged(nameof(Cells));
+            GameEngine.Clear();
         }
 
         private async Task RunGenerationsAsync()

@@ -1,4 +1,4 @@
-﻿using GameOfLifeLibrary.Models;
+﻿using GameOfLifeLibrary.Models.Cells;
 using System.ComponentModel;
 
 namespace ToolExplorerWPF.Models.GameOfLife

@@ -1,5 +1,5 @@
-﻿using GameOfLifeLibrary.Grids;
-using GameOfLifeLibrary.Models;
+﻿using GameOfLifeLibrary.Models;
+using GameOfLifeLibrary.Models.Grids;
 using System;
 using System.Collections.Generic;
 using System.Linq;
