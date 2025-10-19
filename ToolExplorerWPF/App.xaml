@@ -14,16 +14,29 @@
                 <ui:ControlsDictionary />
                 <ResourceDictionary Source="pack://application:,,,/ToolExplorerWPF;component/Styles/Generic.xaml" />
             </ResourceDictionary.MergedDictionaries>
-            <converter:UnixEpochToDateTimeConverter x:Key="UnixEpochToDateTimeConverter" />
-            <converter:IngestionsSummaryConverter x:Key="IngestionsSummaryConverter" />
+
+            <!-- Type & Boolean Converters -->
             <converter:EnumToBooleanConverter x:Key="EnumToBooleanConverter" />
             <converter:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
-            <converter:HeightFitConverter x:Key="HeightFitConverter"/>
+            <converter:BooleanInvertConverter x:Key="BooleanInvertConverter"/>
             <converter:TextToPassConverter x:Key="TextToPassConverter"/>
+
+            <!-- List & Collection Converters -->
             <converter:ListDistinctConverter x:Key="ListDistinctConverter"/>
             <converter:ListDistinctNotEmptyConverter x:Key="ListDistinctNotEmptyConverter"/>
+
+            <!-- Date & Time Converters -->
+            <converter:UnixEpochToDateTimeConverter x:Key="UnixEpochToDateTimeConverter" />
+            <converter:IngestionsSummaryConverter x:Key="IngestionsSummaryConverter" />
+
+            <!-- Numeric & Format Converters -->
+            <converter:DecimalConverter x:Key="DecimalConverter"/>
+            <converter:DecimalToString x:Key="DecimalToString"/>
+            <converter:PriceToString x:Key="PriceToString"/>
+
+            <!-- UI & Misc Converters -->
+            <converter:HeightFitConverter x:Key="HeightFitConverter"/>
             <converter:SubstanceColorsConverter x:Key="SubstanceColorsConverter"/>
-            
         </ResourceDictionary>
     </Application.Resources>
 </Application>

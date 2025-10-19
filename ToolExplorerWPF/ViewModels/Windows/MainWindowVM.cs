@@ -52,6 +52,12 @@ namespace ToolExplorerWPF.ViewModels.Windows
                 Content = "Psychonaut Journal",
                 Icon = new SymbolIcon { Symbol = SymbolRegular.BookOpen24 },
                 TargetPageType = typeof(Views.Pages.PsychonautJournalPage)
+            },
+            new NavigationViewItem()
+            {
+                Content = "Game of life",
+                Icon = new SymbolIcon { Symbol = SymbolRegular.AnimalTurtle24 },
+                TargetPageType = typeof(Views.Pages.GameOfLifePage)
             }
         };
 

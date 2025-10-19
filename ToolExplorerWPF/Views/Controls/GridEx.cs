@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -102,19 +103,18 @@ namespace ToolExplorerWPF.Views.Controls
         #endregion
 
         #region ItemSource Property
+
         public IList ItemsSource
         {
-            get
-            {
-                return (IList)GetValue(ItemSourceProperty);
-            }
-            set
-            {
-                SetValue(ItemSourceProperty, value);
-            }
+            get => (IList)GetValue(ItemsSourceProperty);
+            set => SetValue(ItemsSourceProperty, value);
         }
 
-        public static readonly DependencyProperty ItemSourceProperty = DependencyProperty.RegisterAttached("ItemsSource", typeof(IList), typeof(GridEx), new PropertyMetadata(null, ItemsSourceChanged));
+        public static readonly DependencyProperty ItemsSourceProperty = DependencyProperty.Register(
+            "ItemsSource",
+            typeof(IList),
+            typeof(GridEx),
+            new PropertyMetadata(null, ItemsSourceChanged));
         public static void ItemsSourceChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e)
         {
             if (!(obj is GridEx) || e.NewValue == null)

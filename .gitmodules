@@ -10,3 +10,6 @@
 [submodule "References/PsychonautJournalLibrary"]
 	path = References/PsychonautJournalLibrary
 	url = https://github.com/IchiSamaFR/PsychonautJournalLibrary.git
+[submodule "References/GameOfLifeLibrary"]
+	path = References/GameOfLifeLibrary
+	url = https://github.com/IchiSamaFR/GameOfLifeLibrary.git

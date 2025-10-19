@@ -30,6 +30,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\References\AstarLibrary\AstarLibrary\AstarLibrary.csproj" />
+    <ProjectReference Include="..\References\GameOfLifeLibrary\GameOfLifeLibrary\GameOfLifeLibrary.csproj" />
     <ProjectReference Include="..\References\HtmlScraperLibrary\HtmlScraperLibrary\HtmlScraperLibrary.csproj" />
     <ProjectReference Include="..\References\PasswordLibrary\PasswordLibrary\PasswordLibrary.csproj" />
     <ProjectReference Include="..\References\PsychonautJournalLibrary\PsychonautJournalLibrary\PsychonautJournalLibrary.csproj" />
