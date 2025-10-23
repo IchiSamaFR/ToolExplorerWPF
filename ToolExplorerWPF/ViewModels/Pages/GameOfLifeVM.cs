@@ -244,6 +244,7 @@ namespace ToolExplorerWPF.ViewModels.Pages
         {
             if (!IsStarted)
             {
+                GameEngine.SetRules(new ModulableRules(MinSurvivalNeighbors, MaxSurvivalNeighbors, BirthNeighbors));
                 GameEngine.StartGeneration();
                 IsStarted = true;
             }
