@@ -7,11 +7,12 @@
       xmlns:local="clr-namespace:ToolExplorerWPF.Views.Pages"
       xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
       xmlns:controls="clr-namespace:ToolExplorerWPF.Views.Controls"
+      xmlns:lifeControls="clr-namespace:ToolExplorerWPF.Views.Controls.GameOfLife"
       xmlns:models="clr-namespace:GameOfLifeLibrary.Models;assembly=GameOfLifeLibrary"
       mc:Ignorable="d" 
       d:DataContext="{d:DesignInstance vm:GameOfLifeVM,
                                        IsDesignTimeCreatable=False}"
-      d:DesignHeight="800"
+      d:DesignHeight="500"
       d:DesignWidth="800"
       x:Name="Page"
       Title="GameOfLifePage">
@@ -23,28 +24,10 @@
         </Grid.ColumnDefinitions>
         <ui:Card VerticalAlignment="Stretch"
             VerticalContentAlignment="Stretch">
-            <controls:ArrayGridEx ArraySource="{Binding Cells}">
-                <controls:ArrayGridEx.ItemTemplate>
-                    <DataTemplate>
-                        <Button VerticalAlignment="Stretch"
-		                    HorizontalAlignment="Stretch"
-		                    Margin="1"
-		                    Command="{Binding DataContext.ApplyLifeCommand, ElementName=Page}"
-		                    CommandParameter="{Binding .}">
-                            <Button.Style>
-                                <Style TargetType="Button">
-                                    <Setter Property="Background" Value="White"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsAlive}" Value="True">
-                                            <Setter Property="Background" Value="Black"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Button.Style>
-                        </Button>
-                    </DataTemplate>
-                </controls:ArrayGridEx.ItemTemplate>
-            </controls:ArrayGridEx>
+            <lifeControls:LifeGrid
+	            AliveCells="{Binding AliveCells}"
+                Zoom="{Binding Zoom}"
+	            CellClickCommand="{Binding ApplyLifeCommand}" />
         </ui:Card>
 
         <StackPanel Grid.Column="1"
@@ -53,9 +36,8 @@
                 <Expander.Header>
                     <ui:TextBlock Text="Grid" FontTypography="BodyStrong"/>
                 </Expander.Header>
-                <StackPanel Orientation="Vertical"
-                    IsEnabled="{Binding IsStarted, Converter={StaticResource BooleanInvertConverter}}">
-                    <ui:TextBlock Text="Height"/>
+                <StackPanel Orientation="Vertical">
+                    <ui:TextBlock Text="Zoom"/>
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
@@ -64,28 +46,21 @@
                         <Slider HorizontalAlignment="Stretch"
                             VerticalAlignment="Center"
                             IsSnapToTickEnabled="True"
-                            Minimum="10"
-                            Maximum="100"
-                            TickFrequency="1"
-                            Value="{Binding Width, Mode=TwoWay}"  Margin="0 0 10 0"/>
+                            Minimum="0.05"
+                            Maximum="1"
+                            TickFrequency="0.05"
+                            Value="{Binding Zoom, Mode=TwoWay}"  Margin="0 0 10 0"/>
                         <TextBox Grid.Column="1"
-                            Text="{Binding Width, Mode=TwoWay}"/>
+                            Text="{Binding Zoom, Mode=TwoWay}"/>
                     </Grid>
-                    <ui:TextBlock Text="Width"/>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="50"/>
-                        </Grid.ColumnDefinitions>
-                        <Slider HorizontalAlignment="Stretch"
-                            VerticalAlignment="Center"
-                            IsSnapToTickEnabled="True"
-                            Minimum="10"
-                            Maximum="100"
-                            TickFrequency="1"
-                            Value="{Binding Height, Mode=TwoWay}"  Margin="0 0 10 0"/>
-                        <TextBox Grid.Column="1" Text="{Binding Height, Mode=TwoWay}"/>
-                    </Grid>
+                    <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Right"
+                        Margin="0 10 0 0">
+                        <ui:Button
+                            Appearance="Secondary"
+                            Command="{Binding RenderCommand}"
+                            Content="Render" />
+                    </StackPanel>
                 </StackPanel>
             </Expander>
             <Expander Margin="0,10,0,0">

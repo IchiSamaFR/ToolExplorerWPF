@@ -1,10 +1,7 @@
 ﻿using GameOfLifeLibrary.Engines;
-using GameOfLifeLibrary.Helpers;
 using GameOfLifeLibrary.Models;
-using GameOfLifeLibrary.Models.Cells;
 using GameOfLifeLibrary.Models.Rules;
 using GameOfLifeLibrary.Patterns;
-using ToolExplorerWPF.Models.GameOfLife;
 using Wpf.Ui.Controls;
 
 namespace ToolExplorerWPF.ViewModels.Pages
@@ -21,9 +18,7 @@ namespace ToolExplorerWPF.ViewModels.Pages
 
         // View
         [ObservableProperty]
-        private int _width = 30;
-        [ObservableProperty]
-        private int _height = 30;
+        private double _zoom = 1;
         [ObservableProperty]
         private int _speedDelay = 100;
 
@@ -46,8 +41,14 @@ namespace ToolExplorerWPF.ViewModels.Pages
         private bool _isStarted = false;
         [ObservableProperty]
         private bool _isRunning = false;
-        [ObservableProperty]
-        private ICell[,] _cells = new ICell[0, 0];
+
+        public ICollection<(int x, int y)> AliveCells
+        {
+            get
+            {
+                return GameEngine?.Grid?.AliveCells.ToList() ?? new List<(int x, int y)>();
+            }
+        }
 
         public int Generation
         {
@@ -57,12 +58,7 @@ namespace ToolExplorerWPF.ViewModels.Pages
             }
             set
             {
-                if (GameEngine == null)
-                {
-                    return;
-                }
-                GameEngine.GoToGeneration(Math.Min(Math.Max(value, 0), TotalGenerations));
-                OnPropertyChanged(nameof(Generation));
+                SetGeneration(value);
             }
         }
         public int TotalGenerations
@@ -75,8 +71,10 @@ namespace ToolExplorerWPF.ViewModels.Pages
 
 
         // Gestion des changements des valeurs avec délai
-        partial void OnWidthChanged(int value)
+        partial void OnZoomChanged(double value)
         {
+            return;
+
             if (_cancellationWidthToken != null)
             {
                 _cancellationWidthToken.Cancel();
@@ -87,33 +85,11 @@ namespace ToolExplorerWPF.ViewModels.Pages
                 try
                 {
                     await Task.Delay(_inputDelay, _cancellationWidthToken.Token);
-                    GameEngine.Grid.SetWidth(value);
-                    Cells = GameEngine.Grid.Cells;
+                    // Set zoom level
                 }
                 catch (TaskCanceledException)
                 {
                     // Task was cancelled, do nothing
-                }
-            });
-        }
-        partial void OnHeightChanged(int value)
-        {
-            if (_cancellationHeightToken != null)
-            {
-                _cancellationHeightToken.Cancel();
-            }
-            _cancellationHeightToken = new CancellationTokenSource();
-            _ = Task.Factory.StartNew(async () =>
-            {
-                try
-                {
-                    await Task.Delay(_inputDelay, _cancellationHeightToken.Token);
-                    GameEngine.Grid.SetHeight(value);
-                    Cells = GameEngine.Grid.Cells;
-                }
-                catch (TaskCanceledException)
-                {
-                    // La tâche a été annulée, ne rien faire
                 }
             });
         }
@@ -159,24 +135,22 @@ namespace ToolExplorerWPF.ViewModels.Pages
         {
             IsStarted = false;
 
-            var grid = new ObservableGrid(Width, Height);
             var rules = new ModulableRules(MinSurvivalNeighbors, MaxSurvivalNeighbors, BirthNeighbors);
-            GameEngine = GameEngineFactory.CreateCustomGameEngine(grid, rules);
-
-            // Met à jour la collection observable
-            Cells = GameEngine.Grid.Cells;
+            GameEngine = new GameEngine();
+            GameEngine.SetRules(rules);
         }
 
         [RelayCommand]
-        public void ApplyLife(ICell node)
+        public void ApplyLife((int x, int y) node)
         {
             if (SelectedPattern != null)
             {
-                PatternLoader.ApplyPattern(GameEngine.Grid, SelectedPattern, node.X, node.Y);
+                PatternLoader.ApplyPattern(GameEngine.Grid, SelectedPattern, node.x, node.y);
                 return;
             }
 
-            node.IsAlive = !node.IsAlive;
+            GameEngine.Grid.SetCell(node.x, node.y);
+            OnPropertyChanged(nameof(AliveCells));
         }
 
         [RelayCommand]
@@ -199,10 +173,9 @@ namespace ToolExplorerWPF.ViewModels.Pages
         [RelayCommand]
         public void ImportPatterns()
         {
-            Patterns = RlePatternImporter.LoadAllRlePatterns();
+            Patterns = RlePatternImporter.FetchPatterns();
         }
 
-        // Commandes de contrôle du jeu
         [RelayCommand]
         public void Reset()
         {
@@ -211,7 +184,7 @@ namespace ToolExplorerWPF.ViewModels.Pages
             GameEngine.Reset();
             OnPropertyChanged(nameof(Generation));
             OnPropertyChanged(nameof(TotalGenerations));
-            OnPropertyChanged(nameof(Cells));
+            OnPropertyChanged(nameof(AliveCells));
         }
 
         [RelayCommand]
@@ -228,6 +201,7 @@ namespace ToolExplorerWPF.ViewModels.Pages
         public void Clear()
         {
             GameEngine.Clear();
+            OnPropertyChanged(nameof(AliveCells));
         }
 
         private async Task RunGenerationsAsync()
@@ -240,17 +214,34 @@ namespace ToolExplorerWPF.ViewModels.Pages
         }
 
         [RelayCommand]
+        public void Render()
+        {
+            OnPropertyChanged(nameof(AliveCells));
+        }
+
+        [RelayCommand]
         public void NextGeneration()
         {
             if (!IsStarted)
             {
                 GameEngine.SetRules(new ModulableRules(MinSurvivalNeighbors, MaxSurvivalNeighbors, BirthNeighbors));
-                GameEngine.StartGeneration();
                 IsStarted = true;
             }
             GameEngine.NextGeneration();
             OnPropertyChanged(nameof(Generation));
             OnPropertyChanged(nameof(TotalGenerations));
+            OnPropertyChanged(nameof(AliveCells));
+        }
+
+        public void SetGeneration(int generation)
+        {
+            if (GameEngine == null)
+            {
+                return;
+            }
+            GameEngine.GoToGeneration(Math.Min(Math.Max(generation, 0), TotalGenerations));
+            OnPropertyChanged(nameof(Generation));
+            OnPropertyChanged(nameof(AliveCells));
         }
     }
 }
