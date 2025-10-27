@@ -1,39 +1,48 @@
-﻿using System.Windows.Input;
+﻿using System;
+using System.Collections.Generic;
+using System.Windows.Input;
 using System.Windows.Media;
 
 namespace ToolExplorerWPF.Views.Controls.GameOfLife
 {
     public class LifeGridPattern : ALifeGrid
     {
+        private const double PaddingRatio = 0.1; // 10% padding
+
         protected override LifeGridOptions GetGridOptions()
         {
-            int minX = AliveCells.Min(c => c.x);
-            int maxX = AliveCells.Max(c => c.x);
-            int minY = AliveCells.Min(c => c.y);
-            int maxY = AliveCells.Max(c => c.y);
+            // If there are no alive cells, fallback to default grid
+            if (AliveCells == null || AliveCells.Count == 0)
+            {
+                return new LifeGridOptions(1, 1, Math.Min(ActualWidth, ActualHeight), 0, 0);
+            }
+
+            // Find pattern bounds in a single pass for performance
+            int minX = int.MaxValue, maxX = int.MinValue, minY = int.MaxValue, maxY = int.MinValue;
+            foreach (var (x, y) in AliveCells)
+            {
+                if (x < minX) minX = x;
+                if (x > maxX) maxX = x;
+                if (y < minY) minY = y;
+                if (y > maxY) maxY = y;
+            }
 
             int patternColumns = maxX - minX + 1;
             int patternRows = maxY - minY + 1;
 
-            // Calculate cell size to fit all cells and keep them square
-            double cellWidth = ActualWidth / patternColumns;
-            double cellHeight = ActualHeight / patternRows;
+            // Calculate cell size to fit all cells and keep them square, with padding
+            double cellWidth = ActualWidth / (patternColumns + patternColumns * PaddingRatio);
+            double cellHeight = ActualHeight / (patternRows + patternRows * PaddingRatio);
             double cellSize = Math.Min(cellWidth, cellHeight);
 
+            // Calculate grid size in cells, with padding
             int width = (int)(ActualWidth / cellSize);
-            width -= width / 10;
             int height = (int)(ActualHeight / cellSize);
-            height -= height / 10;
 
-            // Calculate total grid size in pixels
-            double gridWidth = cellSize * patternColumns;
-            double gridHeight = cellSize * patternRows;
-
-            // Calculate offset to center the grid
+            // Calculate offset to center the pattern
             double offsetX = (width - patternColumns) / 2.0;
             double offsetY = (height - patternRows) / 2.0;
 
-            // Set options for drawing
             return new LifeGridOptions(
                 width,
                 height,
@@ -42,6 +51,7 @@ namespace ToolExplorerWPF.Views.Controls.GameOfLife
                 Math.Abs((int)offsetY)
             );
         }
+
         protected override void OnRender(DrawingContext dc)
         {
             // Draw background if no cells

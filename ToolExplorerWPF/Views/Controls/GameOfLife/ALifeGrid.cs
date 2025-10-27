@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Media;
 
 namespace ToolExplorerWPF.Views.Controls.GameOfLife
@@ -28,7 +26,7 @@ namespace ToolExplorerWPF.Views.Controls.GameOfLife
         }
 
         #region DependencyProperty
-        // IsReadOnly property (indicates if the grid is editable or not)
+
         public static readonly DependencyProperty IsReadOnlyProperty =
             DependencyProperty.Register(
                 nameof(IsReadOnly),
@@ -36,6 +34,7 @@ namespace ToolExplorerWPF.Views.Controls.GameOfLife
                 typeof(ALifeGrid),
                 new FrameworkPropertyMetadata(false)
             );
+
         public bool IsReadOnly
         {
             get => (bool)GetValue(IsReadOnlyProperty);
@@ -49,37 +48,38 @@ namespace ToolExplorerWPF.Views.Controls.GameOfLife
                 typeof(ALifeGrid),
                 new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsRender, OnAliveCellsChanged)
             );
+
         public ICollection<(int x, int y)> AliveCells
         {
             get => (ICollection<(int x, int y)>)GetValue(AliveCellsProperty);
             set => SetValue(AliveCellsProperty, value);
         }
 
-
-
         public static readonly DependencyProperty OriginXProperty =
             DependencyProperty.Register(
                 nameof(OriginX),
-                typeof(int),
+                typeof(double),
                 typeof(ALifeGrid),
-                new FrameworkPropertyMetadata(0, FrameworkPropertyMetadataOptions.AffectsRender)
+                new FrameworkPropertyMetadata(0.0, FrameworkPropertyMetadataOptions.AffectsRender)
             );
-        public int OriginX
+
+        public double OriginX
         {
-            get => (int)GetValue(OriginXProperty);
+            get => (double)GetValue(OriginXProperty);
             set => SetValue(OriginXProperty, value);
         }
 
         public static readonly DependencyProperty OriginYProperty =
             DependencyProperty.Register(
                 nameof(OriginY),
-                typeof(int),
+                typeof(double),
                 typeof(ALifeGrid),
-                new FrameworkPropertyMetadata(0, FrameworkPropertyMetadataOptions.AffectsRender)
+                new FrameworkPropertyMetadata(0.0, FrameworkPropertyMetadataOptions.AffectsRender)
             );
-        public int OriginY
+
+        public double OriginY
         {
-            get => (int)GetValue(OriginYProperty);
+            get => (double)GetValue(OriginYProperty);
             set => SetValue(OriginYProperty, value);
         }
 
@@ -90,12 +90,28 @@ namespace ToolExplorerWPF.Views.Controls.GameOfLife
                 typeof(ALifeGrid),
                 new FrameworkPropertyMetadata(1.0, FrameworkPropertyMetadataOptions.AffectsRender)
             );
+
         public double Zoom
         {
             get => (double)GetValue(ZoomProperty);
             set => SetValue(ZoomProperty, value);
         }
+
         #endregion
+
+        // Pens are static to avoid recreating them on every render
+        private static readonly Pen ThinPen;
+        private static readonly Pen ThickPen;
+        private const int DefaultThinBlock = 1;
+        private const int DefaultThickBlock = 10;
+
+        static ALifeGrid()
+        {
+            ThinPen = new Pen(Brushes.LightGray, 1);
+            ThinPen.Freeze();
+            ThickPen = new Pen(Brushes.Gray, 2);
+            ThickPen.Freeze();
+        }
 
         protected abstract LifeGridOptions GetGridOptions();
 
@@ -114,59 +130,65 @@ namespace ToolExplorerWPF.Views.Controls.GameOfLife
 
         protected void DrawAliveCells(DrawingContext dc, ICollection<(int x, int y)> aliveCells, LifeGridOptions options)
         {
-            if (aliveCells == null) return;
-            foreach (var pt in aliveCells)
+            if (aliveCells == null || aliveCells.Count == 0)
             {
-                var x = pt.x + options.OffsetX;
-                var y = pt.y + options.OffsetY;
+                return;
+            }
 
-                if (x > -1 && x <= options.Width && y > -1 && y <= options.Height)
+            double cellSize = options.CellSize;
+            double width = options.Width;
+            double height = options.Height;
+            double offsetX = options.OffsetX;
+            double offsetY = options.OffsetY;
+
+            foreach (var (xCell, yCell) in aliveCells)
+            {
+                double x = xCell + offsetX;
+                double y = yCell + offsetY;
+
+                // Only draw if inside visible grid
+                if (x <= -1 || x >= width || y <= -1 || y >= height)
                 {
-                    double cellWidth = options.CellSize;
-                    double cellHeight = options.CellSize;
-
-                    // Si la cellule est sur la première colonne, on ajuste la largeur
-                    if (x < 0)
-                    {
-                        cellWidth = (1 + x) * options.CellSize;
-                        x = 0;
-                    }
-                    // Si la cellule est sur la première ligne, on ajuste la hauteur
-                    if (y < 0)
-                    {
-                        cellHeight = (1 + y) * options.CellSize;
-                        y = 0;
-                    }
-
-                    // Si la cellule est sur la dernière colonne, on ajuste la largeur
-                    if ((int)x == (int)options.Width - 1)
-                    {
-                        cellWidth = ActualWidth - x * options.CellSize;
-                    }
-                    // Si la cellule est sur la dernière ligne, on ajuste la hauteur
-                    if ((int)y == (int)options.Height - 1)
-                    {
-                        cellHeight = ActualHeight - y * options.CellSize;
-                    }
-
-                    dc.DrawRectangle(
-                        Brushes.Black,
-                        null,
-                        new Rect(x * options.CellSize, y * options.CellSize, cellWidth, cellHeight));
+                    continue;
                 }
+
+                double cellWidth = cellSize;
+                double cellHeight = cellSize;
+
+                // Si la cellule est sur la première colonne, on ajuste la largeur
+                if (x < 0)
+                {
+                    cellWidth = (1 + x) * options.CellSize;
+                    x = 0;
+                }
+                // Si la cellule est sur la première ligne, on ajuste la hauteur
+                if (y < 0)
+                {
+                    cellHeight = (1 + y) * options.CellSize;
+                    y = 0;
+                }
+                // Adjust width for last column
+                if (x > width - 1)
+                {
+                    cellWidth = Math.Max(0, ActualWidth - x * cellSize);
+                }
+                // Adjust height for last row
+                if (y > height - 1)
+                {
+                    cellHeight = Math.Max(0, ActualHeight - y * cellSize);
+                }
+
+                dc.DrawRectangle(
+                    Brushes.Black,
+                    null,
+                    new Rect(x * cellSize, y * cellSize, cellWidth, cellHeight));
             }
         }
 
         protected void DrawGridLines(DrawingContext dc, LifeGridOptions options)
         {
-            // Always two pens: thin (1px) and thick (2px)
-            Pen thinPen = new Pen(Brushes.LightGray, 1);
-            thinPen.Freeze();
-            Pen thickPen = new Pen(Brushes.Gray, 2);
-            thickPen.Freeze();
-
-            int thinBlock = 1;
-            int thickBlock = 10;
+            int thinBlock = DefaultThinBlock;
+            int thickBlock = DefaultThickBlock;
 
             while (options.CellSize * thinBlock < 10)
             {
@@ -174,37 +196,43 @@ namespace ToolExplorerWPF.Views.Controls.GameOfLife
                 thickBlock *= 10;
             }
 
-            // Draw vertical lines
-            var halfWidth = (int)options.Width / 2;
-            for (int x = -halfWidth; x <= halfWidth; x++)
-            {
-                var gridX = x + options.OffsetX;
-                double xPos = gridX * options.CellSize;
+            // Calculate visible range for vertical lines
+            int minX = (int)Math.Floor(-options.OffsetX);
+            int maxX = (int)Math.Ceiling((ActualWidth / options.CellSize) - options.OffsetX);
 
-                if ((int)x % thickBlock == 0)
+            for (int x = minX; x <= maxX; x++)
+            {
+                double xPos = (x + options.OffsetX) * options.CellSize;
+                if (xPos < 0 || xPos > ActualWidth)
+                    continue;
+
+                if (x % thickBlock == 0)
                 {
-                    dc.DrawLine(thickPen, new Point(xPos, 0), new Point(xPos, ActualHeight));
+                    dc.DrawLine(ThickPen, new Point(xPos, 0), new Point(xPos, ActualHeight));
                 }
-                else if ((int)x % thinBlock == 0)
+                else if (x % thinBlock == 0)
                 {
-                    dc.DrawLine(thinPen, new Point(xPos, 0), new Point(xPos, ActualHeight));
+                    dc.DrawLine(ThinPen, new Point(xPos, 0), new Point(xPos, ActualHeight));
                 }
             }
 
-            // Draw horizontal lines
-            var halfHeight = (int)options.Height / 2;
-            for (int y = -halfHeight; y <= halfHeight; y++)
-            {
-                var gridY = y + options.OffsetY;
-                double yPos = gridY * options.CellSize;
+            // Calculate visible range for horizontal lines
+            int minY = (int)Math.Floor(-options.OffsetY);
+            int maxY = (int)Math.Ceiling((ActualHeight / options.CellSize) - options.OffsetY);
 
-                if ((int)y % thickBlock == 0)
+            for (int y = minY; y <= maxY; y++)
+            {
+                double yPos = (y + options.OffsetY) * options.CellSize;
+                if (yPos < 0 || yPos > ActualHeight)
+                    continue;
+
+                if (y % thickBlock == 0)
                 {
-                    dc.DrawLine(thickPen, new Point(0, yPos), new Point(ActualWidth, yPos));
+                    dc.DrawLine(ThickPen, new Point(0, yPos), new Point(ActualWidth, yPos));
                 }
-                else if ((int)y % thinBlock == 0)
+                else if (y % thinBlock == 0)
                 {
-                    dc.DrawLine(thinPen, new Point(0, yPos), new Point(ActualWidth, yPos));
+                    dc.DrawLine(ThinPen, new Point(0, yPos), new Point(ActualWidth, yPos));
                 }
             }
         }
