@@ -9,6 +9,7 @@
       xmlns:controls="clr-namespace:ToolExplorerWPF.Views.Controls"
       xmlns:lifeControls="clr-namespace:ToolExplorerWPF.Views.Controls.GameOfLife"
       xmlns:models="clr-namespace:GameOfLifeLibrary.Models;assembly=GameOfLifeLibrary"
+      xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
       mc:Ignorable="d" 
       d:DataContext="{d:DesignInstance vm:GameOfLifeVM,
                                        IsDesignTimeCreatable=False}"
@@ -25,14 +26,15 @@
         <ui:Card VerticalAlignment="Stretch"
             VerticalContentAlignment="Stretch">
             <lifeControls:LifeGrid
-	            AliveCells="{Binding AliveCells}"
+	            AliveCells="{Binding AliveCells, Mode=OneWay}"
                 Zoom="{Binding Zoom}"
+                IsReadOnly="{Binding IsStarted}"
 	            CellClickCommand="{Binding ApplyLifeCommand}" />
         </ui:Card>
 
         <StackPanel Grid.Column="1"
             Margin="10,0,0,0">
-            <Expander>
+            <Expander x:Name="Grid">
                 <Expander.Header>
                     <ui:TextBlock Text="Grid" FontTypography="BodyStrong"/>
                 </Expander.Header>
@@ -46,24 +48,16 @@
                         <Slider HorizontalAlignment="Stretch"
                             VerticalAlignment="Center"
                             IsSnapToTickEnabled="True"
-                            Minimum="0.05"
+                            Minimum="0.1"
                             Maximum="1"
                             TickFrequency="0.05"
                             Value="{Binding Zoom, Mode=TwoWay}"  Margin="0 0 10 0"/>
                         <TextBox Grid.Column="1"
                             Text="{Binding Zoom, Mode=TwoWay}"/>
                     </Grid>
-                    <StackPanel Orientation="Horizontal"
-                        HorizontalAlignment="Right"
-                        Margin="0 10 0 0">
-                        <ui:Button
-                            Appearance="Secondary"
-                            Command="{Binding RenderCommand}"
-                            Content="Render" />
-                    </StackPanel>
                 </StackPanel>
             </Expander>
-            <Expander Margin="0,10,0,0">
+            <Expander x:Name="Rules" Margin="0,10,0,0">
                 <Expander.Header>
                     <ui:TextBlock Text="Rules" FontTypography="BodyStrong"/>
                 </Expander.Header>
@@ -126,11 +120,12 @@
                     </StackPanel>
                 </StackPanel>
             </Expander>
-            <Expander Margin="0,10,0,0">
+            <Expander x:Name="Pattern" Margin="0,10,0,0">
                 <Expander.Header>
                     <ui:TextBlock Text="Pattern" FontTypography="BodyStrong"/>
                 </Expander.Header>
-                <StackPanel Orientation="Vertical">
+                <StackPanel Orientation="Vertical"
+                     IsEnabled="{Binding IsStarted, Converter={StaticResource BooleanInvertConverter}}">
                     <ui:TextBlock Text="Select Pattern"/>
                     <Grid Margin="0,5,0,0">
                         <Grid.ColumnDefinitions>
@@ -138,14 +133,16 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <ComboBox DisplayMemberPath="Name"
-                            ItemsSource="{Binding Patterns}"
-                            SelectedItem="{Binding SelectedPattern}"/>
+                            ItemsSource="{Binding Patterns, Mode=OneWay}"
+                            SelectedItem="{Binding SelectedPattern}"
+                            IsDropDownOpen="{Binding IsPatternsOpened}">
+                        </ComboBox>
                         <ui:Button Grid.Column="1"
-				            Margin="10 0 0 0"
+				            Margin="5 0 0 0"
                             VerticalAlignment="Stretch"
                             Appearance="Primary"
-                            Command="{Binding ImportPatternsCommand}"
-                            Icon="{ui:SymbolIcon ArrowClockwise24}"/>
+                            Command="{Binding ParseNewPatternCommand}"
+                            Icon="{ui:SymbolIcon TableAdd24}"/>
                     </Grid>
 
                     <StackPanel Margin="0 10 0 0"
@@ -155,12 +152,11 @@
 				            Margin="10 0 0 0"
                             Appearance="Primary"
                             Command="{Binding UnselectPatternCommand}"
-				            Visibility="{Binding IsStarted, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=invert}"
                             Content="Unselect" />
                     </StackPanel>
                 </StackPanel>
             </Expander>
-            <Expander Margin="0 10 0 0"
+            <Expander x:Name="Generation" Margin="0 10 0 0"
                 IsExpanded="True">
                 <Expander.Header>
                     <ui:TextBlock Text="Generation" FontTypography="BodyStrong"/>

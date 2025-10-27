@@ -1,0 +1,31 @@
+﻿<ui:ContentDialog x:Class="ToolExplorerWPF.Views.Dialogs.GameOfLife.ImportPatternDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:local="clr-namespace:ToolExplorerWPF.Views.Dialogs.GameOfLife"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    xmlns:controls="clr-namespace:ToolExplorerWPF.Views.Controls"
+    xmlns:lifeControls="clr-namespace:ToolExplorerWPF.Views.Controls.GameOfLife"
+    xmlns:vm="clr-namespace:ToolExplorerWPF.ViewModels.Dialogs.GameOfLife"
+    mc:Ignorable="d"
+    MaxWidth="700"
+    d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <StackPanel Orientation="Vertical">
+            <ui:TextBlock Text="Pattern text"
+                FontTypography="BodyStrong"/>
+            <controls:BindableRichTextBox BoundText="{Binding PatternText, Mode=TwoWay}"
+                Margin="0 5 0 0"
+                Height="100"/>
+
+            <ui:TextBlock Text="Pattern displayed"
+                FontTypography="BodyStrong"
+                Margin="0 5 0 0"/>
+            <lifeControls:LifeGridPattern
+	            AliveCells="{Binding PatternCells}"
+                Margin="0 5 0 0"
+                Height="300" />
+        </StackPanel>
+    </Grid>
+</ui:ContentDialog>

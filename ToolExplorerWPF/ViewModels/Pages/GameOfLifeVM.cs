@@ -1,17 +1,19 @@
-﻿using GameOfLifeLibrary.Engines;
+﻿using AstarLibrary;
+using GameOfLifeLibrary.Engines;
 using GameOfLifeLibrary.Models;
 using GameOfLifeLibrary.Models.Rules;
 using GameOfLifeLibrary.Patterns;
+using PasswordLibrary;
+using ToolExplorerWPF.Views.Dialogs.GameOfLife;
+using Wpf.Ui;
 using Wpf.Ui.Controls;
+using Wpf.Ui.Extensions;
 
 namespace ToolExplorerWPF.ViewModels.Pages
 {
-    public partial class GameOfLifeVM : ObservableObject, INavigationAware
+    public partial class GameOfLifeVM(IContentDialogService _contentDialogService) : ObservableObject, INavigationAware
     {
         private bool _isInitialized = false;
-        private int _inputDelay = 200;
-        private CancellationTokenSource? _cancellationWidthToken;
-        private CancellationTokenSource? _cancellationHeightToken;
 
         [ObservableProperty]
         private GameEngine _gameEngine = null!;
@@ -32,9 +34,23 @@ namespace ToolExplorerWPF.ViewModels.Pages
 
         // Patterns
         [ObservableProperty]
-        private Pattern? _selectedPattern;
+        [NotifyPropertyChangedFor(nameof(Patterns))]
+        private bool _isPatternsOpened;
         [ObservableProperty]
+        private Pattern? _selectedPattern;
+
         private List<Pattern> _patterns = new();
+        public List<Pattern> Patterns
+        {
+            get
+            {
+                if (IsPatternsOpened)
+                {
+                    _patterns = PatternImporter.LoadExistingPatterns();
+                }
+                return _patterns;
+            }
+        }
 
         // Generation
         [ObservableProperty]
@@ -71,28 +87,6 @@ namespace ToolExplorerWPF.ViewModels.Pages
 
 
         // Gestion des changements des valeurs avec délai
-        partial void OnZoomChanged(double value)
-        {
-            return;
-
-            if (_cancellationWidthToken != null)
-            {
-                _cancellationWidthToken.Cancel();
-            }
-            _cancellationWidthToken = new CancellationTokenSource();
-            _ = Task.Factory.StartNew(async () =>
-            {
-                try
-                {
-                    await Task.Delay(_inputDelay, _cancellationWidthToken.Token);
-                    // Set zoom level
-                }
-                catch (TaskCanceledException)
-                {
-                    // Task was cancelled, do nothing
-                }
-            });
-        }
         partial void OnMinSurvivalNeighborsChanged(int value)
         {
             if (value < 0)
@@ -128,7 +122,7 @@ namespace ToolExplorerWPF.ViewModels.Pages
         {
             _isInitialized = true;
             Generate();
-            ImportPatterns();
+            LoadExistingPatterns();
         }
 
         private void Generate()
@@ -146,6 +140,7 @@ namespace ToolExplorerWPF.ViewModels.Pages
             if (SelectedPattern != null)
             {
                 PatternLoader.ApplyPattern(GameEngine.Grid, SelectedPattern, node.x, node.y);
+                OnPropertyChanged(nameof(AliveCells));
                 return;
             }
 
@@ -171,9 +166,33 @@ namespace ToolExplorerWPF.ViewModels.Pages
         }
 
         [RelayCommand]
-        public void ImportPatterns()
+        public void LoadExistingPatterns()
         {
-            Patterns = RlePatternImporter.FetchPatterns();
+            PatternImporter.LoadExistingPatterns();
+        }
+
+        [RelayCommand]
+        public async Task ParseNewPattern()
+        {
+            var content = new ImportPatternDialog();
+
+
+            var result = await _contentDialogService.ShowSimpleDialogAsync(
+                new SimpleContentDialogCreateOptions()
+                {
+                    Title = "New pattern",
+                    Content = content,
+                    PrimaryButtonText = "Create",
+                    CloseButtonText = "Cancel",
+                }
+            );
+
+            if (result != ContentDialogResult.Primary || string.IsNullOrWhiteSpace(content.ViewModel.PatternText))
+            {
+                return;
+            }
+
+            PatternImporter.InsertNewPattern(content.ViewModel.PatternText);
         }
 
         [RelayCommand]
@@ -211,12 +230,6 @@ namespace ToolExplorerWPF.ViewModels.Pages
                 NextGeneration();
                 await Task.Delay(SpeedDelay);
             }
-        }
-
-        [RelayCommand]
-        public void Render()
-        {
-            OnPropertyChanged(nameof(AliveCells));
         }
 
         [RelayCommand]
