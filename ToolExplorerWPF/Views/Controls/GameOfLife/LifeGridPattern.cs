@@ -5,9 +5,25 @@ using System.Windows.Media;
 
 namespace ToolExplorerWPF.Views.Controls.GameOfLife
 {
-    public class LifeGridPattern : ALifeGrid
+    public class LifeGridPattern : AMouseLifeGrid
     {
         private const double PaddingRatio = 0.1; // 10% padding
+
+        // Always readonly
+        public override bool IsReadOnly
+        {
+            get => true;
+            set { }
+        }
+
+
+        protected override void OnAliveCellsChanged()
+        {
+            base.OnAliveCellsChanged();
+            Zoom = 1.0;
+            OriginX = 0.0;
+            OriginY = 0.0;
+        }
 
         protected override LifeGridOptions GetGridOptions()
         {
@@ -33,39 +49,23 @@ namespace ToolExplorerWPF.Views.Controls.GameOfLife
             // Calculate cell size to fit all cells and keep them square, with padding
             double cellWidth = ActualWidth / (patternColumns + patternColumns * PaddingRatio);
             double cellHeight = ActualHeight / (patternRows + patternRows * PaddingRatio);
-            double cellSize = Math.Min(cellWidth, cellHeight);
+            double cellSize = Math.Min(cellWidth, cellHeight) * Zoom;
 
             // Calculate grid size in cells, with padding
             int width = (int)(ActualWidth / cellSize);
             int height = (int)(ActualHeight / cellSize);
 
             // Calculate offset to center the pattern
-            double offsetX = (width - patternColumns) / 2.0;
-            double offsetY = (height - patternRows) / 2.0;
+            double offsetX = OriginX + (width - patternColumns) / 2.0;
+            double offsetY = OriginY + (height - patternRows) / 2.0;
 
             return new LifeGridOptions(
                 width,
                 height,
                 cellSize,
-                Math.Abs((int)offsetX),
-                Math.Abs((int)offsetY)
+                offsetX,
+                offsetY
             );
-        }
-
-        protected override void OnRender(DrawingContext dc)
-        {
-            // Draw background if no cells
-            if (AliveCells == null || AliveCells.Count == 0)
-            {
-                DrawBackground(dc);
-                return;
-            }
-
-            var options = GetGridOptions();
-
-            DrawBackground(dc);
-            DrawAliveCells(dc, AliveCells, options);
-            DrawGridLines(dc, options);
         }
     }
 }

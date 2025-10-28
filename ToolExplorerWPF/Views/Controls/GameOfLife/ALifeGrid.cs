@@ -25,7 +25,66 @@ namespace ToolExplorerWPF.Views.Controls.GameOfLife
             }
         }
 
-        #region DependencyProperty
+        #region DependencyProperties
+        public static readonly DependencyProperty BackgroundBrushProperty =
+            DependencyProperty.Register(
+                nameof(BackgroundBrush),
+                typeof(Brush),
+                typeof(ALifeGrid),
+                new FrameworkPropertyMetadata(
+                    Brushes.White,
+                    FrameworkPropertyMetadataOptions.AffectsRender | FrameworkPropertyMetadataOptions.BindsTwoWayByDefault
+                )
+            );
+
+        /// <summary>
+        /// The brush used to paint the grid background.
+        /// </summary>
+        public Brush BackgroundBrush
+        {
+            get => (Brush)GetValue(BackgroundBrushProperty);
+            set => SetValue(BackgroundBrushProperty, value);
+        }
+
+        public static readonly DependencyProperty GridLineBrushProperty =
+            DependencyProperty.Register(
+                nameof(GridLineBrush),
+                typeof(Brush),
+                typeof(ALifeGrid),
+                new FrameworkPropertyMetadata(
+                    Brushes.LightGray,
+                    FrameworkPropertyMetadataOptions.AffectsRender | FrameworkPropertyMetadataOptions.BindsTwoWayByDefault
+                )
+            );
+
+        /// <summary>
+        /// The brush used to paint the grid lines.
+        /// </summary>
+        public Brush GridLineBrush
+        {
+            get => (Brush)GetValue(GridLineBrushProperty);
+            set => SetValue(GridLineBrushProperty, value);
+        }
+
+        public static readonly DependencyProperty AliveCellBrushProperty =
+            DependencyProperty.Register(
+                nameof(AliveCellBrush),
+                typeof(Brush),
+                typeof(ALifeGrid),
+                new FrameworkPropertyMetadata(
+                    Brushes.Black,
+                    FrameworkPropertyMetadataOptions.AffectsRender | FrameworkPropertyMetadataOptions.BindsTwoWayByDefault
+                )
+            );
+
+        /// <summary>
+        /// The brush used to paint alive cells.
+        /// </summary>
+        public Brush AliveCellBrush
+        {
+            get => (Brush)GetValue(AliveCellBrushProperty);
+            set => SetValue(AliveCellBrushProperty, value);
+        }
 
         public static readonly DependencyProperty IsReadOnlyProperty =
             DependencyProperty.Register(
@@ -35,7 +94,7 @@ namespace ToolExplorerWPF.Views.Controls.GameOfLife
                 new FrameworkPropertyMetadata(false)
             );
 
-        public bool IsReadOnly
+        public virtual bool IsReadOnly
         {
             get => (bool)GetValue(IsReadOnlyProperty);
             set => SetValue(IsReadOnlyProperty, value);
@@ -60,7 +119,7 @@ namespace ToolExplorerWPF.Views.Controls.GameOfLife
                 nameof(OriginX),
                 typeof(double),
                 typeof(ALifeGrid),
-                new FrameworkPropertyMetadata(0.0, FrameworkPropertyMetadataOptions.AffectsRender)
+                new FrameworkPropertyMetadata(0.0, FrameworkPropertyMetadataOptions.AffectsRender | FrameworkPropertyMetadataOptions.BindsTwoWayByDefault)
             );
 
         public double OriginX
@@ -74,7 +133,7 @@ namespace ToolExplorerWPF.Views.Controls.GameOfLife
                 nameof(OriginY),
                 typeof(double),
                 typeof(ALifeGrid),
-                new FrameworkPropertyMetadata(0.0, FrameworkPropertyMetadataOptions.AffectsRender)
+                new FrameworkPropertyMetadata(0.0, FrameworkPropertyMetadataOptions.AffectsRender | FrameworkPropertyMetadataOptions.BindsTwoWayByDefault)
             );
 
         public double OriginY
@@ -88,7 +147,7 @@ namespace ToolExplorerWPF.Views.Controls.GameOfLife
                 nameof(Zoom),
                 typeof(double),
                 typeof(ALifeGrid),
-                new FrameworkPropertyMetadata(1.0, FrameworkPropertyMetadataOptions.AffectsRender)
+                new FrameworkPropertyMetadata(1.0, FrameworkPropertyMetadataOptions.AffectsRender | FrameworkPropertyMetadataOptions.BindsTwoWayByDefault)
             );
 
         public double Zoom
@@ -100,18 +159,8 @@ namespace ToolExplorerWPF.Views.Controls.GameOfLife
         #endregion
 
         // Pens are static to avoid recreating them on every render
-        private static readonly Pen ThinPen;
-        private static readonly Pen ThickPen;
         private const int DefaultThinBlock = 1;
         private const int DefaultThickBlock = 10;
-
-        static ALifeGrid()
-        {
-            ThinPen = new Pen(Brushes.LightGray, 1);
-            ThinPen.Freeze();
-            ThickPen = new Pen(Brushes.Gray, 2);
-            ThickPen.Freeze();
-        }
 
         protected abstract LifeGridOptions GetGridOptions();
 
@@ -119,13 +168,17 @@ namespace ToolExplorerWPF.Views.Controls.GameOfLife
         {
             if (d is ALifeGrid grid)
             {
-                grid.InvalidateVisual();
+                grid.OnAliveCellsChanged();
             }
+        }
+        protected virtual void OnAliveCellsChanged()
+        {
+            InvalidateVisual();
         }
 
         protected void DrawBackground(DrawingContext dc)
         {
-            dc.DrawRectangle(Brushes.White, null, new Rect(0, 0, ActualWidth, ActualHeight));
+            dc.DrawRectangle(BackgroundBrush, null, new Rect(0, 0, ActualWidth, ActualHeight));
         }
 
         protected void DrawAliveCells(DrawingContext dc, ICollection<(int x, int y)> aliveCells, LifeGridOptions options)
@@ -179,7 +232,7 @@ namespace ToolExplorerWPF.Views.Controls.GameOfLife
                 }
 
                 dc.DrawRectangle(
-                    Brushes.Black,
+                    AliveCellBrush,
                     null,
                     new Rect(x * cellSize, y * cellSize, cellWidth, cellHeight));
             }
@@ -196,6 +249,12 @@ namespace ToolExplorerWPF.Views.Controls.GameOfLife
                 thickBlock *= 10;
             }
 
+            // Use the current GridLineBrush for both pens
+            Pen thinPen = new Pen(GridLineBrush, 1);
+            thinPen.Freeze();
+            Pen thickPen = new Pen(GridLineBrush, 2);
+            thickPen.Freeze();
+
             // Calculate visible range for vertical lines
             int minX = (int)Math.Floor(-options.OffsetX);
             int maxX = (int)Math.Ceiling((ActualWidth / options.CellSize) - options.OffsetX);
@@ -208,11 +267,11 @@ namespace ToolExplorerWPF.Views.Controls.GameOfLife
 
                 if (x % thickBlock == 0)
                 {
-                    dc.DrawLine(ThickPen, new Point(xPos, 0), new Point(xPos, ActualHeight));
+                    dc.DrawLine(thickPen, new Point(xPos, 0), new Point(xPos, ActualHeight));
                 }
                 else if (x % thinBlock == 0)
                 {
-                    dc.DrawLine(ThinPen, new Point(xPos, 0), new Point(xPos, ActualHeight));
+                    dc.DrawLine(thinPen, new Point(xPos, 0), new Point(xPos, ActualHeight));
                 }
             }
 
@@ -228,11 +287,11 @@ namespace ToolExplorerWPF.Views.Controls.GameOfLife
 
                 if (y % thickBlock == 0)
                 {
-                    dc.DrawLine(ThickPen, new Point(0, yPos), new Point(ActualWidth, yPos));
+                    dc.DrawLine(thickPen, new Point(0, yPos), new Point(ActualWidth, yPos));
                 }
                 else if (y % thinBlock == 0)
                 {
-                    dc.DrawLine(ThinPen, new Point(0, yPos), new Point(ActualWidth, yPos));
+                    dc.DrawLine(thinPen, new Point(0, yPos), new Point(ActualWidth, yPos));
                 }
             }
         }
