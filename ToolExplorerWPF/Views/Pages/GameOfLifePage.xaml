@@ -17,6 +17,9 @@
       d:DesignWidth="800"
       x:Name="Page"
       Title="GameOfLifePage">
+    <Page.InputBindings>
+        <KeyBinding Key="Escape" Command="{Binding UnselectPatternCommand}" />
+    </Page.InputBindings>
 
     <Grid>
         <Grid.ColumnDefinitions>
@@ -27,6 +30,7 @@
             VerticalContentAlignment="Stretch">
             <lifeControls:LifeGrid
 	            AliveCells="{Binding AliveCells}"
+                PreviewCells="{Binding PreviewCells, Mode=OneWay}"
                 Zoom="{Binding Zoom}"
                 IsReadOnly="{Binding IsStarted}"
 	            CellClickCommand="{Binding ApplyLifeCommand}" />
@@ -134,15 +138,14 @@
                         </Grid.ColumnDefinitions>
                         <ComboBox DisplayMemberPath="Name"
                             ItemsSource="{Binding Patterns, Mode=OneWay}"
-                            SelectedItem="{Binding SelectedPattern}"
-                            IsDropDownOpen="{Binding IsPatternsOpened}">
+                            SelectedItem="{Binding SelectedPattern}">
                         </ComboBox>
                         <ui:Button Grid.Column="1"
 				            Margin="5 0 0 0"
                             VerticalAlignment="Stretch"
-                            Appearance="Primary"
-                            Command="{Binding ParseNewPatternCommand}"
-                            Icon="{ui:SymbolIcon TableAdd24}"/>
+                            Appearance="Secondary"
+                            Command="{Binding LoadExistingPatternsCommand}"
+                            Icon="{ui:SymbolIcon ArrowClockwise24}"/>
                     </Grid>
 
                     <StackPanel Margin="0 10 0 0"
@@ -150,9 +153,14 @@
 			            HorizontalAlignment="Right">
                         <ui:Button
 				            Margin="10 0 0 0"
+                            Appearance="Secondary"
+                            Command="{Binding DeserializePatternCommand}"
+                            Content="Import" />
+                        <ui:Button
+				            Margin="10 0 0 0"
                             Appearance="Primary"
-                            Command="{Binding UnselectPatternCommand}"
-                            Content="Unselect" />
+                            Command="{Binding SerializePatternCommand}"
+                            Content="Export" />
                     </StackPanel>
                 </StackPanel>
             </Expander>

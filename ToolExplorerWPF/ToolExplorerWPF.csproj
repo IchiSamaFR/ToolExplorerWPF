@@ -42,6 +42,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Views\Dialogs\GameOfLife\SerializePatternDialog.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Views\Dialogs\Passwords\PasswordItemDialog.xaml.cs">
       <SubType>Code</SubType>
     </Compile>

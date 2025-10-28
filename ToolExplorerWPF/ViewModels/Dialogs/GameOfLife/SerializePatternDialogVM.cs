@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ToolExplorerWPF.ViewModels.Dialogs.GameOfLife
 {
-    public partial class ImportPatternDialogVM : ObservableObject
+    public partial class DeserializePatternDialogVM : ObservableObject
     {
         private Pattern? _pattern;
 
@@ -22,7 +22,7 @@ namespace ToolExplorerWPF.ViewModels.Dialogs.GameOfLife
         {
             try
             {
-                _pattern = PatternImporter.Parse(value);
+                _pattern = PatternImporter.Deserialize(value);
                 PatternCells = _pattern.AliveCells.ToList();
             }
             catch (Exception)

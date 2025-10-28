@@ -30,7 +30,8 @@ namespace ToolExplorerWPF.Views.Controls.GameOfLife
             // If there are no alive cells, fallback to default grid
             if (AliveCells == null || AliveCells.Count == 0)
             {
-                return new LifeGridOptions(1, 1, Math.Min(ActualWidth, ActualHeight), 0, 0);
+                int baseSize = 10;
+                return new LifeGridOptions(ActualWidth / baseSize, ActualHeight / baseSize, Math.Min(ActualWidth, ActualHeight) / baseSize, 0, 0);
             }
 
             // Find pattern bounds in a single pass for performance

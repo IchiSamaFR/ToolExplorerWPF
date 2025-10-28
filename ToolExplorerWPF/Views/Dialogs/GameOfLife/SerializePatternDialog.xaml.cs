@@ -5,13 +5,13 @@ using Wpf.Ui.Controls;
 namespace ToolExplorerWPF.Views.Dialogs.GameOfLife
 {
     /// <summary>
-    /// Logique d'interaction pour ImportPatternDialog.xaml
+    /// Logique d'interaction pour DeserializePatternDialog.xaml
     /// </summary>
-    public partial class ImportPatternDialog : ContentDialog
+    public partial class SerializePatternDialog : ContentDialog
     {
-        public ImportPatternDialogVM ViewModel { get; } = new ();
+        public SerializePatternDialogVM ViewModel { get; } = new ();
 
-        public ImportPatternDialog()
+        public SerializePatternDialog()
         {
             DataContext = ViewModel;
             InitializeComponent();

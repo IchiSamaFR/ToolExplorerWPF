@@ -176,14 +176,27 @@ namespace ToolExplorerWPF.Views.Controls.GameOfLife
             InvalidateVisual();
         }
 
+        protected override void OnRender(DrawingContext dc)
+        {
+            var options = GetGridOptions();
+            DrawBackground(dc);
+            DrawAliveCells(dc, AliveCells, options);
+            DrawGridLines(dc, options);
+        }
+
         protected void DrawBackground(DrawingContext dc)
         {
             dc.DrawRectangle(BackgroundBrush, null, new Rect(0, 0, ActualWidth, ActualHeight));
         }
 
-        protected void DrawAliveCells(DrawingContext dc, ICollection<(int x, int y)> aliveCells, LifeGridOptions options)
+        protected void DrawAliveCells(DrawingContext dc, ICollection<(int x, int y)>? aliveCells, LifeGridOptions options)
         {
-            if (aliveCells == null || aliveCells.Count == 0)
+            DrawCells(dc, aliveCells, options, AliveCellBrush);
+        }
+
+        protected void DrawCells(DrawingContext dc, ICollection<(int x, int y)>? cells, LifeGridOptions options, Brush cellBrush)
+        {
+            if (cells == null || cells.Count == 0)
             {
                 return;
             }
@@ -194,7 +207,7 @@ namespace ToolExplorerWPF.Views.Controls.GameOfLife
             double offsetX = options.OffsetX;
             double offsetY = options.OffsetY;
 
-            foreach (var (xCell, yCell) in aliveCells)
+            foreach (var (xCell, yCell) in cells)
             {
                 double x = xCell + offsetX;
                 double y = yCell + offsetY;
@@ -232,7 +245,7 @@ namespace ToolExplorerWPF.Views.Controls.GameOfLife
                 }
 
                 dc.DrawRectangle(
-                    AliveCellBrush,
+                    cellBrush,
                     null,
                     new Rect(x * cellSize, y * cellSize, cellWidth, cellHeight));
             }

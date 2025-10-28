@@ -11,8 +11,9 @@ using Wpf.Ui.Extensions;
 
 namespace ToolExplorerWPF.ViewModels.Pages
 {
-    public partial class GameOfLifeVM(IContentDialogService _contentDialogService) : ObservableObject, INavigationAware
+    public partial class GameOfLifeVM : ObservableObject, INavigationAware
     {
+        private readonly IContentDialogService _contentDialogService = null!;
         private bool _isInitialized = false;
 
         [ObservableProperty]
@@ -34,29 +35,18 @@ namespace ToolExplorerWPF.ViewModels.Pages
 
         // Patterns
         [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(Patterns))]
-        private bool _isPatternsOpened;
-        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(PreviewCells))]
         private Pattern? _selectedPattern;
 
-        private List<Pattern> _patterns = new();
         public List<Pattern> Patterns
         {
             get
             {
-                if (IsPatternsOpened)
-                {
-                    _patterns = PatternImporter.LoadExistingPatterns();
-                }
-                return _patterns;
+                var lst = PatternImporter.LoadExistingPatterns();
+                lst.Insert(0, new Pattern(string.Empty, 0, 0, Enumerable.Empty<(int x, int y)>()));
+                return lst;
             }
         }
-
-        // Generation
-        [ObservableProperty]
-        private bool _isStarted = false;
-        [ObservableProperty]
-        private bool _isRunning = false;
 
         public ICollection<(int x, int y)> AliveCells
         {
@@ -65,6 +55,19 @@ namespace ToolExplorerWPF.ViewModels.Pages
                 return GameEngine?.Grid?.AliveCells.ToList() ?? new List<(int x, int y)>();
             }
         }
+        public ICollection<(int x, int y)> PreviewCells
+        {
+            get
+            {
+                return SelectedPattern?.AliveCells.ToList() ?? new List<(int x, int y)>();
+            }
+        }
+
+        // Generation
+        [ObservableProperty]
+        private bool _isStarted = false;
+        [ObservableProperty]
+        private bool _isRunning = false;
 
         public int Generation
         {
@@ -85,6 +88,12 @@ namespace ToolExplorerWPF.ViewModels.Pages
             }
         }
 
+        public GameOfLifeVM(IContentDialogService contentDialogService)
+        {
+            _contentDialogService = contentDialogService;
+
+            OnPropertyChanged(nameof(Patterns));
+        }
 
         // Gestion des changements des valeurs avec délai
         partial void OnMinSurvivalNeighborsChanged(int value)
@@ -168,19 +177,19 @@ namespace ToolExplorerWPF.ViewModels.Pages
         [RelayCommand]
         public void LoadExistingPatterns()
         {
-            PatternImporter.LoadExistingPatterns();
+            OnPropertyChanged(nameof(Patterns));
         }
 
         [RelayCommand]
-        public async Task ParseNewPattern()
+        public async Task DeserializePattern()
         {
-            var content = new ImportPatternDialog();
+            var content = new DeserializePatternDialog();
 
 
             var result = await _contentDialogService.ShowSimpleDialogAsync(
                 new SimpleContentDialogCreateOptions()
                 {
-                    Title = "New pattern",
+                    Title = "Deserialize pattern",
                     Content = content,
                     PrimaryButtonText = "Create",
                     CloseButtonText = "Cancel",
@@ -193,6 +202,58 @@ namespace ToolExplorerWPF.ViewModels.Pages
             }
 
             PatternImporter.InsertNewPattern(content.ViewModel.PatternText);
+            LoadExistingPatterns();
+        }
+
+        [RelayCommand]
+        public async Task SerializePattern()
+        {
+            var cells = AliveCells.ToList();
+            if (cells == null || cells.Count == 0)
+            {
+                return;
+            }
+
+            // Find min and max coordinates
+            int minX = cells.Min(c => c.x);
+            int minY = cells.Min(c => c.y);
+
+            // Shift all cells so the top-left is (0,0)
+            var normalizedCells = cells
+                .Select(c => (c.x - minX, c.y - minY))
+                .ToList<(int x, int y)>();
+
+            var content = new SerializePatternDialog();
+            content.ViewModel.PatternName = "NewPattern";
+            content.ViewModel.PatternCells = normalizedCells;
+
+            var result = await _contentDialogService.ShowSimpleDialogAsync(
+                new SimpleContentDialogCreateOptions()
+                {
+                    Title = "Serialize pattern",
+                    Content = content,
+                    PrimaryButtonText = "Create",
+                    CloseButtonText = "Cancel",
+                }
+            );
+
+            if (result != ContentDialogResult.Primary || string.IsNullOrWhiteSpace(content.ViewModel.PatternName))
+            {
+                return;
+            }
+
+            // Recalculate width and height from normalized cells
+            int width = normalizedCells.Max(c => c.x) + 1;
+            int height = normalizedCells.Max(c => c.y) + 1;
+
+            var pattern = new Pattern(
+                content.ViewModel.PatternName,
+                width,
+                height,
+                content.ViewModel.PatternCells
+            );
+            PatternImporter.InsertNewPattern(pattern);
+            LoadExistingPatterns();
         }
 
         [RelayCommand]

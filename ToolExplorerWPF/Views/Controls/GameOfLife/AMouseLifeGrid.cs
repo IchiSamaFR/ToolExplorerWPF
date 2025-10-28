@@ -35,15 +35,6 @@ namespace ToolExplorerWPF.Views.Controls.GameOfLife
         private bool _isMiddleMouseDown = false;
         private Point _lastMiddleMousePos;
 
-
-        protected override void OnRender(DrawingContext dc)
-        {
-            var options = GetGridOptions();
-            DrawBackground(dc);
-            DrawAliveCells(dc, AliveCells, options);
-            DrawGridLines(dc, options);
-        }
-
         protected override void OnMouseDown(MouseButtonEventArgs e)
         {
             base.OnMouseDown(e);
