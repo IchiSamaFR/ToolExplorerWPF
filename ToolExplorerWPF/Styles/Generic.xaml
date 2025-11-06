@@ -4,6 +4,7 @@
     xmlns:controls="clr-namespace:ToolExplorerWPF.Views.Controls"
     xmlns:grids="clr-namespace:ToolExplorerWPF.Views.Controls.Commons"
     xmlns:lifeControls="clr-namespace:ToolExplorerWPF.Views.Controls.GameOfLife"
+    xmlns:astarControls="clr-namespace:ToolExplorerWPF.Views.Controls.Astar"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml">
 
     <Style TargetType="Paragraph">
@@ -15,8 +16,13 @@
 
     <Style TargetType="{x:Type grids:AGrid}">
         <Setter Property="BackgroundBrush" Value="{DynamicResource ButtonBackground}"/>
-        <Setter Property="AliveCellBrush" Value="{DynamicResource TextFillColorPrimaryBrush}"/>
     </Style>
     <Style TargetType="{x:Type grids:AMouseGrid}" BasedOn="{StaticResource {x:Type grids:AGrid}}" />
-    <Style TargetType="{x:Type lifeControls:LifeGrid}" BasedOn="{StaticResource {x:Type grids:AMouseGrid}}" />
+    <Style TargetType="{x:Type lifeControls:LifeGrid}" BasedOn="{StaticResource {x:Type grids:AMouseGrid}}" >
+        <Setter Property="AliveCellBrush" Value="{DynamicResource TextFillColorPrimaryBrush}"/>
+    </Style>
+    <Style TargetType="{x:Type astarControls:AstarGrid}" BasedOn="{StaticResource {x:Type grids:AMouseGrid}}" >
+        <Setter Property="CheckCellBrush" Value="Gray"/>
+        <Setter Property="PathCellBrush" Value="{DynamicResource TextFillColorPrimaryBrush}"/>
+    </Style>
 </ResourceDictionary>

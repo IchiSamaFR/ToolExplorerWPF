@@ -1,14 +1,4 @@
 ﻿using AstarLibrary;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
-using ToolExplorerWPF.Models.PathFinder;
-using ToolExplorerWPF.Services;
 using Wpf.Ui.Controls;
 
 namespace ToolExplorerWPF.ViewModels.Pages
@@ -17,8 +7,11 @@ namespace ToolExplorerWPF.ViewModels.Pages
     {
         private bool _isInitialized = false;
 
-        private PathFinder _pathFinder;
+        private PathFinder _pathFinder = new PathFinder();
         private CancellationTokenSource _cancellationTokenSource;
+
+        [ObservableProperty]
+        private bool _isRunning = false;
 
         [ObservableProperty]
         private int _rows = 5;
@@ -29,100 +22,119 @@ namespace ToolExplorerWPF.ViewModels.Pages
         [ObservableProperty]
         private bool _isDiagonal = false;
 
-        [ObservableProperty]
-        private List<NodeModel> _items = new List<NodeModel>();
 
+        public ICollection<(int x, int y)> WallCells
+        {
+            get
+            {
+                return _pathFinder?.NodesList?.Where(n => n.IsWall).Select(n => n.Pos).ToList() ?? new List<(int x, int y)>();
+            }
+        }
+        public ICollection<(int x, int y)> CheckCells
+        {
+            get
+            {
+                return _pathFinder?.NodesList?.Where(n => n.IsChecked).Select(n => n.Pos).ToList() ?? new List<(int x, int y)>();
+            }
+        }
+        public ICollection<(int x, int y)> PathCells
+        {
+            get
+            {
+                return _pathFinder?.NodesList?.Where(n => n.PathFound).Select(n => n.Pos).ToList() ?? new List<(int x, int y)>();
+            }
+        }
+        public (int x, int y) StartCell
+        {
+            get
+            {
+                return _pathFinder?.NodesList?.FirstOrDefault(n => n.IsStartNode)?.Pos ?? new(0, 0);
+            }
+        }
+        public (int x, int y) EndCell
+        {
+            get
+            {
+                return _pathFinder?.NodesList?.FirstOrDefault(n => n.IsEndNode)?.Pos ?? new(0, 0);
+            }
+        }
 
         partial void OnColumnsChanged(int value)
         {
-            SetItems();
-            Reset();
+            _pathFinder.SetGridSize(Columns, Rows);
+            _pathFinder.SetEndPos((Columns - 1, Rows - 1));
+            NotifyAllProperties();
         }
         partial void OnRowsChanged(int value)
         {
-            SetItems();
-            Reset();
+            _pathFinder.SetGridSize(Columns, Rows);
+            _pathFinder.SetEndPos((Columns - 1, Rows - 1));
+            NotifyAllProperties();
         }
         partial void OnIsDiagonalChanged(bool value)
         {
-            Reset();
+            _pathFinder.IsDiagonal = value;
         }
-
 
         public void OnNavigatedTo()
         {
-            if (!_isInitialized)
-                InitializeViewModel();
+            _pathFinder.SetGridSize(Columns, Rows);
+            _pathFinder.SetEndPos((Columns - 1, Rows - 1));
+            NotifyAllProperties();
         }
-
         public void OnNavigatedFrom()
         {
         }
 
-        private void InitializeViewModel()
+        private void NotifyAllProperties()
         {
-            _isInitialized = true;
-
-            SetItems();
-        }
-        private void SetItems()
-        {
-            var tmp = new List<NodeModel>();
-            _pathFinder = new PathFinder(Columns, Rows);
-
-            for (int y = 0; y < _pathFinder.Height; y++)
-            {
-                for (int x = 0; x < _pathFinder.Width; x++)
-                {
-                    var n = _pathFinder.Nodes[x, y];
-                    tmp.Add(new NodeModel
-                    {
-                        Node = n
-                    });
-                }
-            }
-
-            Items = tmp;
+            OnPropertyChanged(nameof(WallCells));
+            OnPropertyChanged(nameof(CheckCells));
+            OnPropertyChanged(nameof(PathCells));
+            OnPropertyChanged(nameof(StartCell));
+            OnPropertyChanged(nameof(EndCell));
         }
 
         [RelayCommand]
-        public async Task Generate()
+        private async Task Generate()
         {
             await Reset();
-            _pathFinder.IsDiagonal = IsDiagonal;
 
             _cancellationTokenSource = new CancellationTokenSource();
-            await Generate(_cancellationTokenSource.Token);
+            _ = Generate(_cancellationTokenSource.Token);
         }
         private async Task Generate(CancellationToken token)
         {
-
+            if (IsRunning)
+            {
+                return;
+            }
+            IsRunning = true;
             while (!_pathFinder.PathFinished)
             {
                 if (token.IsCancellationRequested)
                 {
-                    return;
+                    break;
                 }
                 await Task.Delay(SpeedDelay);
 
-                var node = _pathFinder.SelectNextNode();
+                _pathFinder.SelectNextNode();
 
-                if(node == null)
-                {
-                    break;
-                }
-                Items.First(it => it.Node == node).Notify();
+                OnPropertyChanged(nameof(CheckCells));
             }
-            Items.ForEach(it => it.Notify());
+            IsRunning = false;
+            OnPropertyChanged(nameof(CheckCells));
+            OnPropertyChanged(nameof(PathCells));
         }
 
         [RelayCommand]
-        public void ApplyWall(NodeModel node)
+        private async Task ApplyWall((int x, int y) node)
         {
-            Reset();
-            node.IsWall = !node.IsWall;
-            node.Notify();
+            _pathFinder.ToggleWall(node.x, node.y);
+            await Reset();
         }
+
+        [RelayCommand]
         private async Task Reset()
         {
             if (_cancellationTokenSource != null && !_cancellationTokenSource.Token.IsCancellationRequested)
@@ -130,10 +142,22 @@ namespace ToolExplorerWPF.ViewModels.Pages
                 _cancellationTokenSource.Cancel();
                 await Task.Delay(SpeedDelay);
             }
-
             _pathFinder.Reset();
-            Items.ForEach(it => it.Notify());
+            IsRunning = false;
+            NotifyAllProperties();
         }
 
+        [RelayCommand]
+        private async Task Clear()
+        {
+            if (_cancellationTokenSource != null && !_cancellationTokenSource.Token.IsCancellationRequested)
+            {
+                _cancellationTokenSource.Cancel();
+                await Task.Delay(SpeedDelay);
+            }
+            _pathFinder.Clear();
+            IsRunning = false;
+            NotifyAllProperties();
+        }
     }
 }
