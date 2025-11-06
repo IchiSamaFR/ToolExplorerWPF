@@ -33,7 +33,8 @@
                 PreviewCells="{Binding PreviewCells, Mode=OneWay}"
                 Zoom="{Binding Zoom}"
                 IsReadOnly="{Binding IsStarted}"
-	            CellClickCommand="{Binding ApplyLifeCommand}" />
+	            LeftCellDragCommand="{Binding ApplyLifeCommand}" 
+	            LeftCellClickCommand="{Binding ApplyLifeCommand}" />
         </ui:Card>
 
         <StackPanel Grid.Column="1"

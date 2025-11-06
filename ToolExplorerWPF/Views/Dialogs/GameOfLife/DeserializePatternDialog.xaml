@@ -22,7 +22,9 @@
             <ui:TextBlock Text="Pattern displayed"
                 FontTypography="BodyStrong"
                 Margin="0 5 0 0"/>
-            <lifeControls:LifeGridPattern
+            <lifeControls:LifeGrid
+                IsCellFit="True"
+                IsReadOnly="True"
 	            AliveCells="{Binding PatternCells}"
                 Margin="0 5 0 0"
                 Height="300" />

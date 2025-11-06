@@ -1,13 +1,35 @@
 ﻿using System.Collections.Generic;
+using System.Configuration;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
+using ToolExplorerWPF.Views.Controls.Commons;
 
 namespace ToolExplorerWPF.Views.Controls.GameOfLife
 {
-    public class LifeGrid : AMouseLifeGrid
+    public class LifeGrid : AMouseGrid
     {
         #region Dependency Properties
+
+        public static readonly DependencyProperty AliveCellBrushProperty =
+            DependencyProperty.Register(
+                nameof(AliveCellBrush),
+                typeof(Brush),
+                typeof(LifeGrid),
+                new FrameworkPropertyMetadata(
+                    Brushes.Black,
+                    FrameworkPropertyMetadataOptions.AffectsRender | FrameworkPropertyMetadataOptions.BindsTwoWayByDefault
+                )
+            );
+
+        /// <summary>
+        /// The brush used to paint alive cells.
+        /// </summary>
+        public Brush AliveCellBrush
+        {
+            get => (Brush)GetValue(AliveCellBrushProperty);
+            set => SetValue(AliveCellBrushProperty, value);
+        }
 
         public static readonly DependencyProperty PreviewCellsProperty =
             DependencyProperty.Register(
@@ -41,18 +63,82 @@ namespace ToolExplorerWPF.Views.Controls.GameOfLife
             set => SetValue(PreviewCellBrushProperty, value);
         }
 
+        public static readonly DependencyProperty IsCellFitProperty =
+            DependencyProperty.Register(
+                nameof(IsCellFit),
+                typeof(bool),
+                typeof(LifeGrid),
+                new FrameworkPropertyMetadata(
+                    false,
+                    FrameworkPropertyMetadataOptions.AffectsRender | FrameworkPropertyMetadataOptions.BindsTwoWayByDefault
+                )
+            );
+        public bool IsCellFit
+        {
+            get => (bool)GetValue(IsCellFitProperty);
+            set => SetValue(IsCellFitProperty, value);
+        }
+
         #endregion
 
+        private const double PaddingRatio = 0.1; // 10% padding
         private const double BaseCellSize = 30.0;
 
-        protected override LifeGridOptions GetGridOptions()
+        protected override GridOptions GetGridOptions()
+        {
+            return IsCellFit ? FitGetGridOptions() : BaseGetGridOptions();
+        }
+        private GridOptions FitGetGridOptions()
+        {
+            // If there are no alive cells, fallback to default grid
+            if (AliveCells == null || AliveCells.Count == 0)
+            {
+                int baseSize = 10;
+                return new GridOptions(ActualWidth / baseSize, ActualHeight / baseSize, Math.Min(ActualWidth, ActualHeight) / baseSize, 0, 0);
+            }
+
+            // Find pattern bounds in a single pass for performance
+            int minX = int.MaxValue, maxX = int.MinValue, minY = int.MaxValue, maxY = int.MinValue;
+            foreach (var (x, y) in AliveCells)
+            {
+                if (x < minX) minX = x;
+                if (x > maxX) maxX = x;
+                if (y < minY) minY = y;
+                if (y > maxY) maxY = y;
+            }
+
+            int patternColumns = maxX - minX + 1;
+            int patternRows = maxY - minY + 1;
+
+            // Calculate cell size to fit all cells and keep them square, with padding
+            double cellWidth = ActualWidth / (patternColumns + patternColumns * PaddingRatio);
+            double cellHeight = ActualHeight / (patternRows + patternRows * PaddingRatio);
+            double cellSize = Math.Min(cellWidth, cellHeight) * Zoom;
+
+            // Calculate grid size in cells, with padding
+            int width = (int)(ActualWidth / cellSize);
+            int height = (int)(ActualHeight / cellSize);
+
+            // Calculate offset to center the pattern
+            double offsetX = OriginX + (width - patternColumns) / 2.0;
+            double offsetY = OriginY + (height - patternRows) / 2.0;
+
+            return new GridOptions(
+                width,
+                height,
+                cellSize,
+                offsetX,
+                offsetY
+            );
+        }
+        private GridOptions BaseGetGridOptions()
         {
             double cellSize = BaseCellSize * Zoom;
             double width = ActualWidth / cellSize;
             double height = ActualHeight / cellSize;
             double offsetX = OriginX + width / 2.0;
             double offsetY = OriginY + height / 2.0;
-            return new LifeGridOptions(width, height, cellSize, offsetX, offsetY);
+            return new GridOptions(width, height, cellSize, offsetX, offsetY);
         }
 
         protected static void OnPreviewCellsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -71,7 +157,7 @@ namespace ToolExplorerWPF.Views.Controls.GameOfLife
         {
             var options = GetGridOptions();
             DrawBackground(dc);
-            DrawAliveCells(dc, AliveCells, options);
+            DrawCells(dc, AliveCells, options, AliveCellBrush);
             DrawCells(dc, _displayedPreviewCells, options, PreviewCellBrush);
             DrawGridLines(dc, options);
         }

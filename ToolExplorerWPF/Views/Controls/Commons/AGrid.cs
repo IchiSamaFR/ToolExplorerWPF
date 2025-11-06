@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
 
-namespace ToolExplorerWPF.Views.Controls.GameOfLife
+namespace ToolExplorerWPF.Views.Controls.Commons
 {
-    public abstract class ALifeGrid : FrameworkElement
+    public abstract class AGrid : FrameworkElement
     {
-        protected struct LifeGridOptions
+        protected struct GridOptions
         {
             public double Width;
             public double Height;
@@ -15,7 +16,7 @@ namespace ToolExplorerWPF.Views.Controls.GameOfLife
             public double OffsetX;
             public double OffsetY;
 
-            public LifeGridOptions(double width, double height, double cellSize, double offsetX, double offsetY)
+            public GridOptions(double width, double height, double cellSize, double offsetX, double offsetY)
             {
                 Width = width;
                 Height = height;
@@ -30,7 +31,7 @@ namespace ToolExplorerWPF.Views.Controls.GameOfLife
             DependencyProperty.Register(
                 nameof(BackgroundBrush),
                 typeof(Brush),
-                typeof(ALifeGrid),
+                typeof(AGrid),
                 new FrameworkPropertyMetadata(
                     Brushes.White,
                     FrameworkPropertyMetadataOptions.AffectsRender | FrameworkPropertyMetadataOptions.BindsTwoWayByDefault
@@ -50,7 +51,7 @@ namespace ToolExplorerWPF.Views.Controls.GameOfLife
             DependencyProperty.Register(
                 nameof(GridLineBrush),
                 typeof(Brush),
-                typeof(ALifeGrid),
+                typeof(AGrid),
                 new FrameworkPropertyMetadata(
                     Brushes.LightGray,
                     FrameworkPropertyMetadataOptions.AffectsRender | FrameworkPropertyMetadataOptions.BindsTwoWayByDefault
@@ -66,31 +67,11 @@ namespace ToolExplorerWPF.Views.Controls.GameOfLife
             set => SetValue(GridLineBrushProperty, value);
         }
 
-        public static readonly DependencyProperty AliveCellBrushProperty =
-            DependencyProperty.Register(
-                nameof(AliveCellBrush),
-                typeof(Brush),
-                typeof(ALifeGrid),
-                new FrameworkPropertyMetadata(
-                    Brushes.Black,
-                    FrameworkPropertyMetadataOptions.AffectsRender | FrameworkPropertyMetadataOptions.BindsTwoWayByDefault
-                )
-            );
-
-        /// <summary>
-        /// The brush used to paint alive cells.
-        /// </summary>
-        public Brush AliveCellBrush
-        {
-            get => (Brush)GetValue(AliveCellBrushProperty);
-            set => SetValue(AliveCellBrushProperty, value);
-        }
-
         public static readonly DependencyProperty IsReadOnlyProperty =
             DependencyProperty.Register(
                 nameof(IsReadOnly),
                 typeof(bool),
-                typeof(ALifeGrid),
+                typeof(AGrid),
                 new FrameworkPropertyMetadata(false)
             );
 
@@ -104,8 +85,8 @@ namespace ToolExplorerWPF.Views.Controls.GameOfLife
             DependencyProperty.Register(
                 nameof(AliveCells),
                 typeof(ICollection<(int x, int y)>),
-                typeof(ALifeGrid),
-                new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsRender, OnAliveCellsChanged)
+                typeof(AGrid),
+                new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsRender, OnCellsChanged)
             );
 
         public ICollection<(int x, int y)> AliveCells
@@ -118,7 +99,7 @@ namespace ToolExplorerWPF.Views.Controls.GameOfLife
             DependencyProperty.Register(
                 nameof(OriginX),
                 typeof(double),
-                typeof(ALifeGrid),
+                typeof(AGrid),
                 new FrameworkPropertyMetadata(0.0, FrameworkPropertyMetadataOptions.AffectsRender | FrameworkPropertyMetadataOptions.BindsTwoWayByDefault)
             );
 
@@ -132,7 +113,7 @@ namespace ToolExplorerWPF.Views.Controls.GameOfLife
             DependencyProperty.Register(
                 nameof(OriginY),
                 typeof(double),
-                typeof(ALifeGrid),
+                typeof(AGrid),
                 new FrameworkPropertyMetadata(0.0, FrameworkPropertyMetadataOptions.AffectsRender | FrameworkPropertyMetadataOptions.BindsTwoWayByDefault)
             );
 
@@ -146,7 +127,7 @@ namespace ToolExplorerWPF.Views.Controls.GameOfLife
             DependencyProperty.Register(
                 nameof(Zoom),
                 typeof(double),
-                typeof(ALifeGrid),
+                typeof(AGrid),
                 new FrameworkPropertyMetadata(1.0, FrameworkPropertyMetadataOptions.AffectsRender | FrameworkPropertyMetadataOptions.BindsTwoWayByDefault)
             );
 
@@ -162,16 +143,16 @@ namespace ToolExplorerWPF.Views.Controls.GameOfLife
         private const int DefaultThinBlock = 1;
         private const int DefaultThickBlock = 10;
 
-        protected abstract LifeGridOptions GetGridOptions();
+        protected abstract GridOptions GetGridOptions();
 
-        protected static void OnAliveCellsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        protected static void OnCellsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if (d is ALifeGrid grid)
+            if (d is AGrid grid)
             {
-                grid.OnAliveCellsChanged();
+                grid.OnCellsChanged();
             }
         }
-        protected virtual void OnAliveCellsChanged()
+        protected virtual void OnCellsChanged()
         {
             InvalidateVisual();
         }
@@ -180,7 +161,6 @@ namespace ToolExplorerWPF.Views.Controls.GameOfLife
         {
             var options = GetGridOptions();
             DrawBackground(dc);
-            DrawAliveCells(dc, AliveCells, options);
             DrawGridLines(dc, options);
         }
 
@@ -189,69 +169,7 @@ namespace ToolExplorerWPF.Views.Controls.GameOfLife
             dc.DrawRectangle(BackgroundBrush, null, new Rect(0, 0, ActualWidth, ActualHeight));
         }
 
-        protected void DrawAliveCells(DrawingContext dc, ICollection<(int x, int y)>? aliveCells, LifeGridOptions options)
-        {
-            DrawCells(dc, aliveCells, options, AliveCellBrush);
-        }
-
-        protected void DrawCells(DrawingContext dc, ICollection<(int x, int y)>? cells, LifeGridOptions options, Brush cellBrush)
-        {
-            if (cells == null || cells.Count == 0)
-            {
-                return;
-            }
-
-            double cellSize = options.CellSize;
-            double width = options.Width;
-            double height = options.Height;
-            double offsetX = options.OffsetX;
-            double offsetY = options.OffsetY;
-
-            foreach (var (xCell, yCell) in cells)
-            {
-                double x = xCell + offsetX;
-                double y = yCell + offsetY;
-
-                // Only draw if inside visible grid
-                if (x <= -1 || x >= width || y <= -1 || y >= height)
-                {
-                    continue;
-                }
-
-                double cellWidth = cellSize;
-                double cellHeight = cellSize;
-
-                // Si la cellule est sur la première colonne, on ajuste la largeur
-                if (x < 0)
-                {
-                    cellWidth = (1 + x) * options.CellSize;
-                    x = 0;
-                }
-                // Si la cellule est sur la première ligne, on ajuste la hauteur
-                if (y < 0)
-                {
-                    cellHeight = (1 + y) * options.CellSize;
-                    y = 0;
-                }
-                // Adjust width for last column
-                if (x > width - 1)
-                {
-                    cellWidth = Math.Max(0, ActualWidth - x * cellSize);
-                }
-                // Adjust height for last row
-                if (y > height - 1)
-                {
-                    cellHeight = Math.Max(0, ActualHeight - y * cellSize);
-                }
-
-                dc.DrawRectangle(
-                    cellBrush,
-                    null,
-                    new Rect(x * cellSize, y * cellSize, cellWidth, cellHeight));
-            }
-        }
-
-        protected void DrawGridLines(DrawingContext dc, LifeGridOptions options)
+        protected void DrawGridLines(DrawingContext dc, GridOptions options)
         {
             int thinBlock = DefaultThinBlock;
             int thickBlock = DefaultThickBlock;
@@ -307,6 +225,22 @@ namespace ToolExplorerWPF.Views.Controls.GameOfLife
                     dc.DrawLine(thinPen, new Point(0, yPos), new Point(ActualWidth, yPos));
                 }
             }
+        }
+
+
+        protected (int x, int y) GetCellFromPoint(MouseEventArgs e, double pixelX, double pixelY)
+        {
+            var options = GetGridOptions();
+
+            double x = pixelX / options.CellSize;
+            double y = pixelY / options.CellSize;
+            double cellX = x - options.OffsetX;
+            double cellY = y - options.OffsetY;
+
+            if (cellX < 0) cellX--;
+            if (cellY < 0) cellY--;
+
+            return ((int)cellX, (int)cellY);
         }
     }
 }
