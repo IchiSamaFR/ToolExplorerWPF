@@ -34,16 +34,18 @@ namespace ToolExplorerWPF.ViewModels.Pages
         private int _birthNeighbors = 3;
 
         // Patterns
+        private Pattern _emptyPattern = new Pattern(string.Empty, 0, 0, Enumerable.Empty<(int x, int y)>());
+
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(PreviewCells))]
         private Pattern? _selectedPattern;
 
-        public List<Pattern> Patterns
+        public List<Pattern?> Patterns
         {
             get
             {
                 var lst = PatternImporter.LoadExistingPatterns();
-                lst.Insert(0, new Pattern(string.Empty, 0, 0, Enumerable.Empty<(int x, int y)>()));
+                lst.Insert(0, _emptyPattern);
                 return lst;
             }
         }
@@ -146,7 +148,7 @@ namespace ToolExplorerWPF.ViewModels.Pages
         [RelayCommand]
         public void ApplyLife((int x, int y) node)
         {
-            if (SelectedPattern != null)
+            if (SelectedPattern != null && SelectedPattern != _emptyPattern)
             {
                 PatternLoader.ApplyPattern(GameEngine.Grid, SelectedPattern, node.x, node.y);
                 OnPropertyChanged(nameof(AliveCells));

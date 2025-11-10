@@ -48,14 +48,14 @@ namespace ToolExplorerWPF.ViewModels.Pages
         {
             get
             {
-                return _pathFinder?.NodesList?.FirstOrDefault(n => n.IsStartNode)?.Pos ?? new(0, 0);
+                return _pathFinder?.Starting?.Pos ?? new(0, 0);
             }
         }
         public (int x, int y) EndCell
         {
             get
             {
-                return _pathFinder?.NodesList?.FirstOrDefault(n => n.IsEndNode)?.Pos ?? new(0, 0);
+                return _pathFinder?.Ending?.Pos ?? new(0, 0);
             }
         }
 

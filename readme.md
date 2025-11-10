@@ -12,7 +12,7 @@ ToolExplorerWPF is a set of libraries I developed during my personal time. I do 
 ## Libraries and Integrated Tools
 
 Needs to be cloned into the .sln folder:
-* [AstarLibrary](https://github.com/IchiSamaFR/AstarLibrary)
+* [PathFinderLibrary](https://github.com/IchiSamaFR/PathFinderLibrary)
 * [GameOfLifeLibrary](https://github.com/IchiSamaFR/GameOfLifeLibrary)
 * [HtmlScraperLibrary](https://github.com/IchiSamaFR/HtmlScraperLibrary)
 * [PasswordLibrary](https://github.com/IchiSamaFR/PasswordLibrary)
