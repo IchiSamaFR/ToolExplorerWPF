@@ -1,4 +1,4 @@
-﻿using AstarLibrary;
+﻿using AstarLibrary.Modules;
 using Wpf.Ui.Controls;
 
 namespace ToolExplorerWPF.ViewModels.Pages
@@ -7,7 +7,7 @@ namespace ToolExplorerWPF.ViewModels.Pages
     {
         private bool _isInitialized = false;
 
-        private PathFinder _pathFinder = new PathFinder();
+        private AstarFinder _pathFinder = new AstarFinder();
         private CancellationTokenSource _cancellationTokenSource;
 
         [ObservableProperty]

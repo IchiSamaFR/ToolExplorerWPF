@@ -11,11 +11,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PasswordLibrary", "Referenc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HtmlScraperLibrary", "References\HtmlScraperLibrary\HtmlScraperLibrary\HtmlScraperLibrary.csproj", "{F72DEA2A-D711-B89B-342C-EF755D9F3439}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AstarLibrary", "References\AstarLibrary\AstarLibrary\AstarLibrary.csproj", "{6C8A5369-9D7C-202A-53FD-F069BF9DDF94}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PsychonautJournalLibrary", "References\PsychonautJournalLibrary\PsychonautJournalLibrary\PsychonautJournalLibrary.csproj", "{5E6A4580-72C8-4379-F2D2-57635F7CEB5F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameOfLifeLibrary", "References\GameOfLifeLibrary\GameOfLifeLibrary\GameOfLifeLibrary.csproj", "{18D5832B-DE3D-F225-6EB6-A3B7EF557737}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PathFinderLibrary", "References\PathFinderLibrary\PathFinderLibrary\PathFinderLibrary.csproj", "{AA4683B0-EEF0-7E58-EB46-9EF6E55A1AA2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,10 +35,6 @@ Global
 		{F72DEA2A-D711-B89B-342C-EF755D9F3439}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F72DEA2A-D711-B89B-342C-EF755D9F3439}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F72DEA2A-D711-B89B-342C-EF755D9F3439}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6C8A5369-9D7C-202A-53FD-F069BF9DDF94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6C8A5369-9D7C-202A-53FD-F069BF9DDF94}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6C8A5369-9D7C-202A-53FD-F069BF9DDF94}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6C8A5369-9D7C-202A-53FD-F069BF9DDF94}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5E6A4580-72C8-4379-F2D2-57635F7CEB5F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5E6A4580-72C8-4379-F2D2-57635F7CEB5F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5E6A4580-72C8-4379-F2D2-57635F7CEB5F}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -47,6 +43,10 @@ Global
 		{18D5832B-DE3D-F225-6EB6-A3B7EF557737}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{18D5832B-DE3D-F225-6EB6-A3B7EF557737}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{18D5832B-DE3D-F225-6EB6-A3B7EF557737}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AA4683B0-EEF0-7E58-EB46-9EF6E55A1AA2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA4683B0-EEF0-7E58-EB46-9EF6E55A1AA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AA4683B0-EEF0-7E58-EB46-9EF6E55A1AA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AA4683B0-EEF0-7E58-EB46-9EF6E55A1AA2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -54,9 +54,9 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{EEF89259-E21B-A12E-2666-6F264BAC7B06} = {8C92D91A-22FC-4652-B624-3E0F17425FE3}
 		{F72DEA2A-D711-B89B-342C-EF755D9F3439} = {8C92D91A-22FC-4652-B624-3E0F17425FE3}
-		{6C8A5369-9D7C-202A-53FD-F069BF9DDF94} = {8C92D91A-22FC-4652-B624-3E0F17425FE3}
 		{5E6A4580-72C8-4379-F2D2-57635F7CEB5F} = {8C92D91A-22FC-4652-B624-3E0F17425FE3}
 		{18D5832B-DE3D-F225-6EB6-A3B7EF557737} = {8C92D91A-22FC-4652-B624-3E0F17425FE3}
+		{AA4683B0-EEF0-7E58-EB46-9EF6E55A1AA2} = {8C92D91A-22FC-4652-B624-3E0F17425FE3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {806D1102-0425-4F01-BFA6-EE9D8CEC1C0A}

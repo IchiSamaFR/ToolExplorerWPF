@@ -1,6 +1,3 @@
-[submodule "References/AstarLibrary"]
-	path = References/AstarLibrary
-	url = https://github.com/IchiSamaFR/AstarLibrary.git
 [submodule "References/HtmlScraperLibrary"]
 	path = References/HtmlScraperLibrary
 	url = https://github.com/IchiSamaFR/HtmlScraperLibrary.git
@@ -13,3 +10,6 @@
 [submodule "References/GameOfLifeLibrary"]
 	path = References/GameOfLifeLibrary
 	url = https://github.com/IchiSamaFR/GameOfLifeLibrary.git
+[submodule "References/PathFinderLibrary"]
+	path = References/PathFinderLibrary
+	url = https://github.com/IchiSamaFR/PathFinderLibrary.git
