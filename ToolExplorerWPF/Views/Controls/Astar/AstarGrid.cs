@@ -194,26 +194,33 @@ namespace ToolExplorerWPF.Views.Controls.Astar
 
         protected override GridOptions GetGridOptions()
         {
-            // Calculate cell size to fit all cells and keep them square, with padding
-            double cellWidth = ActualWidth / (Columns + Columns * PaddingRatio);
-            double cellHeight = ActualHeight / (Rows + Rows * PaddingRatio);
-            double cellSize = Math.Min(cellWidth, cellHeight);
+            // Guard against invalid state
+            if (Columns <= 0 || Rows <= 0 || ActualWidth <= 0 || ActualHeight <= 0)
+            {
+                return new GridOptions(10, 10, 1.0, 0.0, 0.0);
+            }
 
-            // Calculate grid size in cells, with padding
-            int width = (int)(ActualWidth / cellSize);
-            int height = (int)(ActualHeight / cellSize);
+            // Compute target cell size with padding, keep square cells
+            double paddingMultiplier = 1.0 + PaddingRatio;
+            double targetCellW = ActualWidth / (Columns * paddingMultiplier);
+            double targetCellH = ActualHeight / (Rows * paddingMultiplier);
+            double cellSize = Math.Min(targetCellW, targetCellH);
+            if (cellSize <= 0) cellSize = 1.0; // safety
 
-            // Calculate offset to center the pattern
-            double offsetX = (width - Columns) / 2.0;
-            double offsetY = (height - Rows) / 2.0;
+            // Use reciprocal to avoid repeated divisions
+            double invCell = 1.0 / cellSize;
+            double widthCells = ActualWidth * invCell;
+            double heightCells = ActualHeight * invCell;
 
-            return new GridOptions(
-                width,
-                height,
-                cellSize,
-                offsetX,
-                offsetY
-            );
+            // Fractional leftovers for centering
+            double widthOut = widthCells - Math.Floor(widthCells);
+            double heightOut = heightCells - Math.Floor(heightCells);
+
+            // Center the grid and apply pan (OriginX/OriginY)
+            double offsetX = OriginX + (widthCells - Columns) * 0.5 + widthOut * 0.5;
+            double offsetY = OriginY + (heightCells - Rows) * 0.5 + heightOut * 0.5;
+
+            return new GridOptions(widthCells, heightCells, cellSize, offsetX, offsetY);
         }
 
 

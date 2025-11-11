@@ -79,71 +79,6 @@ namespace ToolExplorerWPF.Views.Controls.Commons
         private bool _isMiddleMouseDown = false;
         private Point _lastMiddleMousePos;
 
-        protected void DrawCell(DrawingContext dc, (int x, int y)? cell, GridOptions options, Brush cellBrush)
-        {
-            if (cell == null)
-            {
-                return;
-            }
-            DrawCells(dc, new List<(int x, int y)> { cell.Value }, options, cellBrush);
-        }
-        protected void DrawCells(DrawingContext dc, ICollection<(int x, int y)>? cells, GridOptions options, Brush cellBrush)
-        {
-            if (cells == null || cells.Count == 0)
-            {
-                return;
-            }
-
-            double cellSize = options.CellSize;
-            double width = options.Width;
-            double height = options.Height;
-            double offsetX = options.OffsetX;
-            double offsetY = options.OffsetY;
-
-            foreach (var (xCell, yCell) in cells)
-            {
-                double x = xCell + offsetX;
-                double y = yCell + offsetY;
-
-                // Only draw if inside visible grid
-                if (x <= -1 || x >= width || y <= -1 || y >= height)
-                {
-                    continue;
-                }
-
-                double cellWidth = cellSize;
-                double cellHeight = cellSize;
-
-                // Si la cellule est sur la première colonne, on ajuste la largeur
-                if (x < 0)
-                {
-                    cellWidth = (1 + x) * options.CellSize;
-                    x = 0;
-                }
-                // Si la cellule est sur la première ligne, on ajuste la hauteur
-                if (y < 0)
-                {
-                    cellHeight = (1 + y) * options.CellSize;
-                    y = 0;
-                }
-                // Adjust width for last column
-                if (x > width - 1)
-                {
-                    cellWidth = Math.Max(0, ActualWidth - x * cellSize);
-                }
-                // Adjust height for last row
-                if (y > height - 1)
-                {
-                    cellHeight = Math.Max(0, ActualHeight - y * cellSize);
-                }
-
-                dc.DrawRectangle(
-                    cellBrush,
-                    null,
-                    new Rect(x * cellSize, y * cellSize, cellWidth, cellHeight));
-            }
-        }
-
         protected override void OnMouseDown(MouseButtonEventArgs e)
         {
             base.OnMouseDown(e);
@@ -328,8 +263,8 @@ namespace ToolExplorerWPF.Views.Controls.Commons
             var newOptions = GetGridOptions();
 
             // Adjust OriginX and OriginY to keep the cell under the mouse at the same place
-            OriginX += cellX - ((mousePos.X / newOptions.CellSize) - newOptions.OffsetX);
-            OriginY += cellY - ((mousePos.Y / newOptions.CellSize) - newOptions.OffsetY);
+            OriginX -= cellX - ((mousePos.X / newOptions.CellSize) - newOptions.OffsetX);
+            OriginY -= cellY - ((mousePos.Y / newOptions.CellSize) - newOptions.OffsetY);
         }
     }
 }

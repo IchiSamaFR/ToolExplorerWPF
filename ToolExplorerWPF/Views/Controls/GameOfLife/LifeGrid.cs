@@ -94,10 +94,12 @@ namespace ToolExplorerWPF.Views.Controls.GameOfLife
             if (AliveCells == null || AliveCells.Count == 0)
             {
                 int baseSize = 10;
-                return new GridOptions(ActualWidth / baseSize, ActualHeight / baseSize, Math.Min(ActualWidth, ActualHeight) / baseSize, 0, 0);
+                double minDimension = Math.Min(ActualWidth, ActualHeight);
+                double noneCellSize = minDimension / baseSize;
+                return new GridOptions(ActualWidth / noneCellSize, ActualHeight / noneCellSize, noneCellSize, 0, 0);
             }
 
-            // Find pattern bounds in a single pass for performance
+            // Find pattern bounds in a single pass
             int minX = int.MaxValue, maxX = int.MinValue, minY = int.MaxValue, maxY = int.MinValue;
             foreach (var (x, y) in AliveCells)
             {
@@ -110,18 +112,21 @@ namespace ToolExplorerWPF.Views.Controls.GameOfLife
             int patternColumns = maxX - minX + 1;
             int patternRows = maxY - minY + 1;
 
+            // Pre-calculate padding multiplier to avoid repeated multiplications
+            double paddingMultiplier = 1.0 + PaddingRatio;
+
             // Calculate cell size to fit all cells and keep them square, with padding
-            double cellWidth = ActualWidth / (patternColumns + patternColumns * PaddingRatio);
-            double cellHeight = ActualHeight / (patternRows + patternRows * PaddingRatio);
+            double cellWidth = ActualWidth / (patternColumns * paddingMultiplier);
+            double cellHeight = ActualHeight / (patternRows * paddingMultiplier);
             double cellSize = Math.Min(cellWidth, cellHeight) * Zoom;
 
-            // Calculate grid size in cells, with padding
-            int width = (int)(ActualWidth / cellSize);
-            int height = (int)(ActualHeight / cellSize);
+            // Calculate grid size in cells using division instead of cast
+            double width = ActualWidth / cellSize;
+            double height = ActualHeight / cellSize;
 
             // Calculate offset to center the pattern
-            double offsetX = OriginX + (width - patternColumns) / 2.0;
-            double offsetY = OriginY + (height - patternRows) / 2.0;
+            double offsetX = OriginX + (width - patternColumns) * 0.5;
+            double offsetY = OriginY + (height - patternRows) * 0.5;
 
             return new GridOptions(
                 width,
@@ -134,10 +139,14 @@ namespace ToolExplorerWPF.Views.Controls.GameOfLife
         private GridOptions BaseGetGridOptions()
         {
             double cellSize = BaseCellSize * Zoom;
-            double width = ActualWidth / cellSize;
-            double height = ActualHeight / cellSize;
-            double offsetX = OriginX + width / 2.0;
-            double offsetY = OriginY + height / 2.0;
+            double invCellSize = 1.0 / cellSize;
+
+            double width = ActualWidth * invCellSize;
+            double height = ActualHeight * invCellSize;
+
+            double offsetX = OriginX + width * 0.5;
+            double offsetY = OriginY + height * 0.5;
+
             return new GridOptions(width, height, cellSize, offsetX, offsetY);
         }
 
