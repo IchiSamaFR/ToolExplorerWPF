@@ -1,4 +1,5 @@
-﻿using AstarLibrary.Modules;
+﻿using AstarLibrary.Interfaces;
+using AstarLibrary.Modules;
 using Wpf.Ui.Controls;
 
 namespace ToolExplorerWPF.ViewModels.Pages
@@ -7,7 +8,7 @@ namespace ToolExplorerWPF.ViewModels.Pages
     {
         private bool _isInitialized = false;
 
-        private AstarFinder _pathFinder = new AstarFinder();
+        private IFinder _pathFinder = new AstarFinder();
         private CancellationTokenSource _cancellationTokenSource;
 
         [ObservableProperty]
@@ -62,13 +63,13 @@ namespace ToolExplorerWPF.ViewModels.Pages
         partial void OnColumnsChanged(int value)
         {
             _pathFinder.SetGridSize(Columns, Rows);
-            _pathFinder.SetEndPos((Columns - 1, Rows - 1));
+            _pathFinder.SetEndPos(Columns - 1, Rows - 1);
             NotifyAllProperties();
         }
         partial void OnRowsChanged(int value)
         {
             _pathFinder.SetGridSize(Columns, Rows);
-            _pathFinder.SetEndPos((Columns - 1, Rows - 1));
+            _pathFinder.SetEndPos(Columns - 1, Rows - 1);
             NotifyAllProperties();
         }
         partial void OnIsDiagonalChanged(bool value)
@@ -79,7 +80,7 @@ namespace ToolExplorerWPF.ViewModels.Pages
         public void OnNavigatedTo()
         {
             _pathFinder.SetGridSize(Columns, Rows);
-            _pathFinder.SetEndPos((Columns - 1, Rows - 1));
+            _pathFinder.SetEndPos(Columns - 1, Rows - 1);
             NotifyAllProperties();
         }
         public void OnNavigatedFrom()
