@@ -5,6 +5,7 @@
     xmlns:grids="clr-namespace:ToolExplorerWPF.Views.Controls.Commons"
     xmlns:lifeControls="clr-namespace:ToolExplorerWPF.Views.Controls.GameOfLife"
     xmlns:astarControls="clr-namespace:ToolExplorerWPF.Views.Controls.Astar"
+    xmlns:behavior="clr-namespace:ToolExplorerWPF.Behaviors"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml">
 
     <Style TargetType="Paragraph">
@@ -25,4 +26,10 @@
         <Setter Property="CheckCellBrush" Value="Gray"/>
         <Setter Property="PathCellBrush" Value="{DynamicResource TextFillColorPrimaryBrush}"/>
     </Style>
+
+
+    <Style x:Key="DefaultStackPanelStyle" TargetType="StackPanel">
+        <Setter Property="behavior:StackPanelBehavior.Spacing" Value="8"/>
+    </Style>
+
 </ResourceDictionary>
