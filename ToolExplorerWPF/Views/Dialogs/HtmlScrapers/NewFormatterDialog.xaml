@@ -1,0 +1,70 @@
+﻿<ui:ContentDialog x:Class="ToolExplorerWPF.Views.Dialogs.HtmlScrapers.NewFormatterDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:local="clr-namespace:ToolExplorerWPF.Views.Dialogs.HtmlScrapers"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    xmlns:hsControls="clr-namespace:ToolExplorerWPF.Views.Controls.HtmlScraper"
+    xmlns:vm="clr-namespace:ToolExplorerWPF.ViewModels.Dialogs.HtmlScrapers"
+    xmlns:behavior="clr-namespace:ToolExplorerWPF.Behaviors"
+    xmlns:formatters="clr-namespace:HtmlScraperLibrary.Entities.Formatters;assembly=HtmlScraperLibrary"
+    mc:Ignorable="d" 
+    d:DesignHeight="450" d:DesignWidth="800"
+    d:DataContext="{d:DesignInstance vm:NewFormatterDialogVM}">
+    <ui:ContentDialog.Resources>
+        <!-- Style for "New formatter" button -->
+        <Style x:Key="StackChildrenStyle" TargetType="StackPanel">
+            <Setter Property="Orientation" Value="Vertical"/>
+            <Setter Property="behavior:StackPanelBehavior.Spacing" Value="8"/>
+        </Style>
+
+        <!-- Formatter DataTemplates -->
+        <DataTemplate x:Key="PrefixFormatterTemplate" DataType="formatters:PrefixFormatter">
+            <StackPanel Style="{StaticResource StackChildrenStyle}">
+                <ui:TextBlock Text="Value"
+                    FontTypography="BodyStrong"/>
+                <ui:TextBox Text="{Binding Value}"/>
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="SuffixFormatterTemplate" DataType="formatters:SuffixFormatter">
+            <StackPanel Style="{StaticResource StackChildrenStyle}">
+                <ui:TextBlock Text="Value"
+                    FontTypography="BodyStrong"/>
+                <ui:TextBox Text="{Binding Value}"/>
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="ReplaceFormatterTemplate" DataType="formatters:ReplaceFormatter">
+            <StackPanel Style="{StaticResource StackChildrenStyle}">
+                <ui:TextBlock Text="Old value"
+                    FontTypography="BodyStrong"/>
+                <ui:TextBox Text="{Binding OldValue}"/>
+                <ui:TextBlock Text="Is regex"
+                    FontTypography="BodyStrong"/>
+                <ui:ToggleSwitch 
+                    IsChecked="{Binding IsRegex}"/>
+                <ui:TextBlock Text="New value"
+                    FontTypography="BodyStrong"/>
+                <ui:TextBox Text="{Binding NewValue}"/>
+            </StackPanel>
+        </DataTemplate>
+
+        <hsControls:FormatterTemplateSelector x:Key="FormatterTemplateSelector"
+            PrefixFormatterTemplate="{StaticResource PrefixFormatterTemplate}"
+            SuffixFormatterTemplate="{StaticResource SuffixFormatterTemplate}"
+            ReplaceFormatterTemplate="{StaticResource ReplaceFormatterTemplate}"/>
+    </ui:ContentDialog.Resources>
+    <StackPanel Orientation="Vertical"
+        behavior:StackPanelBehavior.Spacing="32">
+        <ComboBox SelectedItem="{Binding SelectedFormatterType}"
+            ItemsSource="{Binding FormatterTypes}"
+            DisplayMemberPath="Type"/>
+        <ContentControl
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Top"
+            Content="{Binding SelectedFormatterType}"
+            ContentTemplateSelector="{StaticResource FormatterTemplateSelector}" />
+    </StackPanel>
+</ui:ContentDialog>

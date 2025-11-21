@@ -1,0 +1,101 @@
+﻿<ui:ContentDialog x:Class="ToolExplorerWPF.Views.Dialogs.HtmlScrapers.NewEntityDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:local="clr-namespace:ToolExplorerWPF.Views.Dialogs.HtmlScrapers"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    xmlns:hsControls="clr-namespace:ToolExplorerWPF.Views.Controls.HtmlScraper"
+    xmlns:vm="clr-namespace:ToolExplorerWPF.ViewModels.Dialogs.HtmlScrapers"
+    xmlns:behavior="clr-namespace:ToolExplorerWPF.Behaviors"
+    mc:Ignorable="d" 
+    d:DesignHeight="450" Width="200"
+    d:DataContext="{d:DesignInstance vm:NewEntityDialogVM}">
+    <ui:ContentDialog.Resources>
+        <!-- Style for "New entity" button -->
+        <Style x:Key="StackChildrenStyle" TargetType="StackPanel">
+            <Setter Property="Orientation" Value="Vertical"/>
+            <Setter Property="behavior:StackPanelBehavior.Spacing" Value="8"/>
+        </Style>
+
+        <!-- Entity DataTemplates -->
+        <DataTemplate x:Key="SelectEntityTemplate" DataType="entities:SelectEntity">
+            <StackPanel Style="{StaticResource StackChildrenStyle}">
+                <ui:TextBlock Text="Query"
+                    FontTypography="BodyStrong"/>
+                <ui:TextBox PlaceholderText="Query"
+                    Text="{Binding Query}"/>
+                <ui:TextBlock Text="OutputKey"
+                    FontTypography="BodyStrong"/>
+                <ui:TextBox PlaceholderText="OutputKey"
+                    Text="{Binding OutputKey}"/>
+                <ui:TextBlock Text="Array"
+                    FontTypography="BodyStrong"/>
+                <ui:ToggleSwitch 
+                    Grid.Column="1"
+                    IsChecked="{Binding IsArray}"/>
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="LoopEntityTemplate" DataType="entities:LoopEntity">
+            <StackPanel Style="{StaticResource StackChildrenStyle}">
+                <ui:TextBlock Text="OutputKey"
+                    FontTypography="BodyStrong"/>
+                <ui:TextBox PlaceholderText="OutputKey"
+                    Text="{Binding OutputKey}"/>
+
+                <ui:TextBlock Text="From"
+                    FontTypography="BodyStrong"/>
+                <ui:TextBox PlaceholderText="From"
+                    Text="{Binding From}"/>
+
+                <ui:TextBlock Text="To"
+                    FontTypography="BodyStrong"/>
+                <ui:TextBox PlaceholderText="To"
+                    Text="{Binding To}"/>
+
+                <ui:TextBlock Text="Step"
+                    FontTypography="BodyStrong"/>
+                <ui:TextBox PlaceholderText="Step"
+                    Text="{Binding Step}"/>
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="TextEntityTemplate" DataType="entities:TextEntity">
+            <StackPanel Style="{StaticResource StackChildrenStyle}">
+                <ui:TextBlock Text="OutputKey"
+                    FontTypography="BodyStrong"/>
+                <ui:TextBox PlaceholderText="OutputKey"
+                    Text="{Binding OutputKey}"/>
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="AttributeEntityTemplate" DataType="entities:AttributeEntity">
+            <StackPanel Style="{StaticResource StackChildrenStyle}">
+                <ui:TextBlock Text="OutputKey"
+                        FontTypography="BodyStrong"/>
+                <ui:TextBox PlaceholderText="OutputKey"
+                        Text="{Binding OutputKey}"/>
+            </StackPanel>
+        </DataTemplate>
+
+        <!-- Template Selectors -->
+        <hsControls:EntityTemplateSelector x:Key="EntityTemplateSelector"
+            SelectEntityTemplate="{StaticResource SelectEntityTemplate}"
+            LoopEntityTemplate="{StaticResource LoopEntityTemplate}"
+            TextEntityTemplate="{StaticResource TextEntityTemplate}"
+            AttributEntityTemplate="{StaticResource AttributeEntityTemplate}"/>
+
+    </ui:ContentDialog.Resources>
+    <StackPanel Orientation="Vertical"
+        behavior:StackPanelBehavior.Spacing="32">
+        <ComboBox SelectedItem="{Binding SelectedEntityType}"
+            ItemsSource="{Binding EntityTypes}"
+            DisplayMemberPath="Type"/>
+        <ContentControl
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Top"
+	        Content="{Binding SelectedEntityType}"
+            ContentTemplateSelector="{StaticResource EntityTemplateSelector}" />
+    </StackPanel>
+</ui:ContentDialog>

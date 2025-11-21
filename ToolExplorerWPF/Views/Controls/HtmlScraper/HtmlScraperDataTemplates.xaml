@@ -1,0 +1,214 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:entities="clr-namespace:HtmlScraperLibrary.Entities;assembly=HtmlScraperLibrary"
+    xmlns:formatters="clr-namespace:HtmlScraperLibrary.Entities.Formatters;assembly=HtmlScraperLibrary"
+    xmlns:hsControls="clr-namespace:ToolExplorerWPF.Views.Controls.HtmlScraper"
+    xmlns:behavior="clr-namespace:ToolExplorerWPF.Behaviors"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml">
+    
+    <SolidColorBrush x:Key="RootHeaderBackground" Color="#B3FF1744"/>
+    <SolidColorBrush x:Key="SelectHeaderBackground" Color="#B3FFEA00"/>
+    <SolidColorBrush x:Key="LoopHeaderBackground" Color="#B300E5FF"/>
+    <SolidColorBrush x:Key="TextHeaderBackground" Color="#B300FF94"/>
+    <SolidColorBrush x:Key="AttributeHeaderBackground" Color="#B3FF9100"/>
+    <SolidColorBrush x:Key="PrefixFormatterHeaderBackground" Color="#B3D500F9"/>
+    <SolidColorBrush x:Key="SuffixFormatterHeaderBackground" Color="#B3FF00C8"/>
+    <SolidColorBrush x:Key="ReplaceFormatterHeaderBackground" Color="#B3AEEA00"/>
+
+    <!-- Style for "New entity" button -->
+    <Style x:Key="NewEntityButtonStyle" TargetType="ui:Button" BasedOn="{StaticResource DefaultButtonStyle}">
+        <Setter Property="Appearance" Value="Secondary"/>
+        <Setter Property="HorizontalAlignment" Value="Right"/>
+        <Setter Property="Content" Value="New"/>
+        <Setter Property="Margin" Value="8,0"/>
+        <Setter Property="CommandParameter" Value="{Binding .}"/>
+        <Setter Property="Command" Value="{Binding Path=DataContext.OpenNewEntityDialogCommand, ElementName=Page}"/>
+    </Style>
+    <Style x:Key="NewFormatterButtonStyle" TargetType="ui:Button" BasedOn="{StaticResource NewEntityButtonStyle}">
+        <Setter Property="Command" Value="{Binding Path=DataContext.OpenNewFormatterDialogCommand, ElementName=Page}"/>
+    </Style>
+    <Style x:Key="StackChildrenStyle" TargetType="StackPanel">
+        <Setter Property="Orientation" Value="Vertical"/>
+        <Setter Property="behavior:StackPanelBehavior.Spacing" Value="8"/>
+    </Style>
+
+    <!-- Entity DataTemplates -->
+    <DataTemplate x:Key="RootEntityTemplate" DataType="entities:RootEntity">
+        <Expander IsExpanded="True"
+            Background="{StaticResource RootHeaderBackground}">
+            <Expander.Header>
+                <Grid>
+                    <TextBlock Text="Root"
+                        VerticalAlignment="Center"/>
+                    <ui:Button Style="{StaticResource NewEntityButtonStyle}"/>
+                </Grid>
+            </Expander.Header>
+            <StackPanel Style="{StaticResource StackChildrenStyle}">
+                <ItemsControl ItemsSource="{Binding Children}" 
+                    ItemTemplateSelector="{DynamicResource EntityTemplateSelector}"/>
+            </StackPanel>
+        </Expander>
+    </DataTemplate>
+
+    <DataTemplate x:Key="SelectEntityTemplate" DataType="entities:SelectEntity">
+        <Expander IsExpanded="True"
+            Background="{StaticResource SelectHeaderBackground}">
+            <Expander.Header>
+                <Grid>
+                    <TextBlock Text="Select"
+                        VerticalAlignment="Center"/>
+                    <ui:Button Style="{StaticResource NewEntityButtonStyle}"/>
+                </Grid>
+            </Expander.Header>
+            <StackPanel Style="{StaticResource StackChildrenStyle}">
+                <ui:TextBlock Text="Query"
+                    FontTypography="BodyStrong"/>
+                <ui:TextBox PlaceholderText="Query"
+                    Text="{Binding Query}"/>
+                <ui:TextBlock Text="OutputKey"
+                    FontTypography="BodyStrong"/>
+                <ui:TextBox PlaceholderText="OutputKey"
+                    Text="{Binding OutputKey}"/>
+                <ui:TextBlock Text="Array"
+                    FontTypography="BodyStrong"/>
+                <ui:ToggleSwitch 
+                    Grid.Column="1"
+                    IsChecked="{Binding IsArray}"/>
+                
+                <ItemsControl ItemsSource="{Binding Children}" 
+                    ItemTemplateSelector="{DynamicResource EntityTemplateSelector}"/>
+            </StackPanel>
+        </Expander>
+    </DataTemplate>
+
+    <DataTemplate x:Key="LoopEntityTemplate" DataType="entities:LoopEntity">
+        <Expander IsExpanded="True"
+            Background="{StaticResource LoopHeaderBackground}">
+            <Expander.Header>
+                <Grid>
+                    <TextBlock Text="Loop"
+                        VerticalAlignment="Center"/>
+                    <ui:Button Style="{StaticResource NewEntityButtonStyle}"/>
+                </Grid>
+            </Expander.Header>
+            <StackPanel Style="{StaticResource StackChildrenStyle}">
+                <ui:TextBlock Text="OutputKey"
+                    FontTypography="BodyStrong"/>
+                <ui:TextBox PlaceholderText="OutputKey"
+                    Text="{Binding OutputKey}"/>
+                <ItemsControl ItemsSource="{Binding Children}" 
+                    ItemTemplateSelector="{DynamicResource EntityTemplateSelector}"/>
+            </StackPanel>
+        </Expander>
+    </DataTemplate>
+
+    <DataTemplate x:Key="TextEntityTemplate" DataType="entities:TextEntity">
+        <Expander IsExpanded="True"
+            Background="{StaticResource TextHeaderBackground}">
+            <Expander.Header>
+                <Grid>
+                    <TextBlock Text="Text"
+                        VerticalAlignment="Center"/>
+                    <ui:Button Style="{StaticResource NewFormatterButtonStyle}"/>
+                </Grid>
+            </Expander.Header>
+            <StackPanel Style="{StaticResource StackChildrenStyle}">
+                <ui:TextBlock Text="OutputKey"
+                    FontTypography="BodyStrong"/>
+                <ui:TextBox PlaceholderText="OutputKey"
+                    Text="{Binding OutputKey}"/>
+                <ItemsControl ItemsSource="{Binding Formatters}" 
+                    ItemTemplateSelector="{DynamicResource FormatterTemplateSelector}"/>
+            </StackPanel>
+        </Expander>
+    </DataTemplate>
+
+    <DataTemplate x:Key="AttributeEntityTemplate" DataType="entities:AttributeEntity">
+        <Expander IsExpanded="True"
+            Background="{StaticResource AttributeHeaderBackground}">
+            <Expander.Header>
+                <Grid>
+                    <TextBlock Text="Attribute"
+                        VerticalAlignment="Center"/>
+                    <ui:Button Style="{StaticResource NewFormatterButtonStyle}"/>
+                </Grid>
+            </Expander.Header>
+            <StackPanel Style="{StaticResource StackChildrenStyle}">
+                <ui:TextBlock Text="OutputKey"
+                    FontTypography="BodyStrong"/>
+                <ui:TextBox PlaceholderText="OutputKey"
+                    Text="{Binding OutputKey}"/>
+                <ItemsControl ItemsSource="{Binding Formatters}" 
+                    ItemTemplateSelector="{DynamicResource FormatterTemplateSelector}"/>
+            </StackPanel>
+        </Expander>
+    </DataTemplate>
+
+    <!-- Formatter DataTemplates -->
+    <DataTemplate x:Key="PrefixFormatterTemplate" DataType="formatters:PrefixFormatter">
+        <Expander IsExpanded="True"
+            Background="{StaticResource PrefixFormatterHeaderBackground}">
+            <Expander.Header>
+                <TextBlock Text="Prefix"
+                    VerticalAlignment="Center"/>
+            </Expander.Header>
+            <StackPanel Style="{StaticResource StackChildrenStyle}">
+                <ui:TextBlock Text="Value"
+                    FontTypography="BodyStrong"/>
+                <ui:TextBox Text="{Binding Value}"/>
+            </StackPanel>
+        </Expander>
+    </DataTemplate>
+
+    <DataTemplate x:Key="SuffixFormatterTemplate" DataType="formatters:SuffixFormatter">
+        <Expander IsExpanded="True"
+            Background="{StaticResource SuffixFormatterHeaderBackground}">
+            <Expander.Header>
+                <TextBlock Text="Suffix"
+                    VerticalAlignment="Center"/>
+            </Expander.Header>
+            <StackPanel Style="{StaticResource StackChildrenStyle}">
+                <ui:TextBlock Text="Value"
+                    FontTypography="BodyStrong"/>
+                <ui:TextBox Text="{Binding Value}"/>
+            </StackPanel>
+        </Expander>
+    </DataTemplate>
+
+    <DataTemplate x:Key="ReplaceFormatterTemplate" DataType="formatters:ReplaceFormatter">
+        <Expander IsExpanded="True"
+            Background="{StaticResource ReplaceFormatterHeaderBackground}">
+            <Expander.Header>
+                <TextBlock Text="Suffix"
+                    VerticalAlignment="Center"/>
+            </Expander.Header>
+            <StackPanel Style="{StaticResource StackChildrenStyle}">
+                <ui:TextBlock Text="Old value"
+                    FontTypography="BodyStrong"/>
+                <ui:TextBox Text="{Binding OldValue}"/>
+                <ui:TextBlock Text="Is regex"
+                    FontTypography="BodyStrong"/>
+                <ui:ToggleSwitch 
+                    IsChecked="{Binding IsRegex}"/>
+                <ui:TextBlock Text="New value"
+                    FontTypography="BodyStrong"/>
+                <ui:TextBox Text="{Binding NewValue}"/>
+            </StackPanel>
+        </Expander>
+    </DataTemplate>
+
+    <!-- Template Selectors -->
+    <hsControls:EntityTemplateSelector x:Key="EntityTemplateSelector"
+        RootEntityTemplate="{StaticResource RootEntityTemplate}"
+        SelectEntityTemplate="{StaticResource SelectEntityTemplate}"
+        LoopEntityTemplate="{StaticResource LoopEntityTemplate}"
+        TextEntityTemplate="{StaticResource TextEntityTemplate}"
+        AttributEntityTemplate="{StaticResource AttributeEntityTemplate}"/>
+
+    <hsControls:FormatterTemplateSelector x:Key="FormatterTemplateSelector"
+        PrefixFormatterTemplate="{StaticResource PrefixFormatterTemplate}"
+        SuffixFormatterTemplate="{StaticResource SuffixFormatterTemplate}"
+        ReplaceFormatterTemplate="{StaticResource ReplaceFormatterTemplate}"/>
+
+</ResourceDictionary>

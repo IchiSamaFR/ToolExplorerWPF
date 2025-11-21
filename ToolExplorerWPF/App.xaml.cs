@@ -10,8 +10,10 @@ using System.IO;
 using System.Reflection;
 using System.Windows.Threading;
 using ToolExplorerWPF.Services;
+using ToolExplorerWPF.ViewModels.Dialogs.HtmlScrapers;
 using ToolExplorerWPF.ViewModels.Pages;
 using ToolExplorerWPF.ViewModels.Windows;
+using ToolExplorerWPF.Views.Dialogs.HtmlScrapers;
 using ToolExplorerWPF.Views.Pages;
 using ToolExplorerWPF.Views.Windows;
 using Wpf.Ui;
@@ -50,10 +52,19 @@ namespace ToolExplorerWPF
                 // Service containing navigation, same as INavigationWindow... but without window
                 services.AddSingleton<INavigationService, NavigationService>();
 
+                // Dialogs
+                services.AddTransient<NewEntityDialog>();
+                services.AddTransient<NewEntityDialogVM>();
+
+                services.AddTransient<NewFormatterDialog>();
+                services.AddTransient<NewFormatterDialogVM>();
+
                 // Main window with navigation
                 services.AddSingleton<INavigationWindow, MainWindow>();
                 services.AddSingleton<MainWindowVM>();
 
+
+                // Main window with navigation
                 services.AddSingleton<DashboardPage>();
                 services.AddSingleton<DashboardVM>();
                 services.AddSingleton<NoisePage>();

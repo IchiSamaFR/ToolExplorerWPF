@@ -1,19 +1,30 @@
 ﻿using HtmlAgilityPack;
 using HtmlScraperLibrary;
+using HtmlScraperLibrary.Builders;
 using HtmlScraperLibrary.Components;
+using HtmlScraperLibrary.Entities;
 using Microsoft.Web.WebView2.Core;
 using Microsoft.Web.WebView2.Wpf;
+using PasswordLibrary;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection.Metadata;
+using System.Text.Encodings.Web;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Windows.Documents;
 using ToolExplorerWPF.Models;
+using ToolExplorerWPF.ViewModels.Dialogs.Passwords;
+using ToolExplorerWPF.Views.Dialogs.HtmlScrapers;
+using ToolExplorerWPF.Views.Dialogs.Passwords;
+using Wpf.Ui;
 using Wpf.Ui.Controls;
+using Wpf.Ui.Extensions;
 
 namespace ToolExplorerWPF.ViewModels.Pages
 {
-    public partial class HtmlScraperVM : ObservableObject, INavigationAware
+    public partial class HtmlScraperVM(IServiceProvider _serviceProvider, IContentDialogService _contentDialogService) : ObservableObject, INavigationAware
     {
         private bool _isInitialized = false;
 
@@ -23,14 +34,15 @@ namespace ToolExplorerWPF.ViewModels.Pages
         private RichTextBox _richTextBox = new RichTextBox();
 
         [ObservableProperty]
-        private string _url;
-        [ObservableProperty]
-        private string _urlSource;
+        private bool _isDialogOpened;
 
         [ObservableProperty]
-        private ObservableCollection<JsonNode> _jsonArrays = new ObservableCollection<JsonNode>();
+        private bool _isModuleConstructor = true;
         [ObservableProperty]
-        private ObservableCollection<JsonTreeNode> _treeNodes = new ObservableCollection<JsonTreeNode>();
+        private string _url;
+
+        [ObservableProperty]
+        private RootEntity _rootEntity = new RootEntity();
 
         public void OnNavigatedTo()
         {
@@ -42,14 +54,15 @@ namespace ToolExplorerWPF.ViewModels.Pages
         }
         private void InitializeViewModel()
         {
+            RootEntity.Children.Add(new SelectEntity());
+
             _isInitialized = true;
             Url = "https://www.google.com/search?q=.net";
             InitWebView2();
-            InitRichTextBox();
         }
 
         [RelayCommand]
-        public void LoadPage()
+        public void LoadUrl()
         {
             if(string.IsNullOrEmpty(Url))
             {
@@ -57,8 +70,9 @@ namespace ToolExplorerWPF.ViewModels.Pages
             }
             WebView.Source = new Uri(Url);
         }
+
         [RelayCommand]
-        public void LoadLocalHtml()
+        public void ImportHtml()
         {
             var dialog = new Microsoft.Win32.OpenFileDialog();
             dialog.FileName = "Html source";
@@ -73,45 +87,99 @@ namespace ToolExplorerWPF.ViewModels.Pages
         }
 
         [RelayCommand]
-        public void LoadXMLConfigHtml()
+        public void ImportConfigFile()
         {
             var dialog = new Microsoft.Win32.OpenFileDialog();
-            dialog.FileName = "Html source";
-            dialog.DefaultExt = ".html";
+            dialog.FileName = "Config";
+            dialog.DefaultExt = ".xml";
             dialog.Filter = "Config files (*.xml)|*.xml";
 
             if (dialog.ShowDialog() == true)
             {
-                SetDocumentText(File.ReadAllText(dialog.FileName));
+                Url = $"file:///{dialog.FileName}";
+                RootEntity = EntityBuilder.BuildFromFilePath(dialog.FileName) as RootEntity ?? new RootEntity();
+                //SetDocumentText(File.ReadAllText(dialog.FileName));
             }
         }
-        [RelayCommand]
-        public async Task ApplyXMLConfigLocal()
-        {
-            JsonArrays.Clear();
-            var document = new HtmlDocument();
-            var html = await GetDocumentHtmlAsync();
-            document.LoadHtml(html);
 
-            var context = ComponentConfig.LoadFromXMLContent(GetDocumentText());
-            var scrapper = Scraper.Build(context);
-            foreach (var item in context.Scrapers)
+        [RelayCommand]
+        public async Task ExecuteConfig()
+        {
+            var document = new HtmlDocument();
+            document.LoadHtml(await GetDocumentHtmlAsync());
+
+            var json = await RootEntity.Extract(document);
+            var jsonTxt = JsonSerializer.Serialize(json, new JsonSerializerOptions
             {
-                var json = scrapper.ActionLocal(item, document).FirstOrDefault();
-                JsonArrays.Add(json);
-                foreach (var node in JsonTreeModel.LoadFromJson(json.ToJsonString()))
+                Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+                WriteIndented = true
+            });
+        }
+
+        [RelayCommand]
+        public async Task OpenNewEntityDialog(AParentEntity entity)
+        {
+            IsDialogOpened = true;
+            var content = _serviceProvider.GetService(typeof(NewEntityDialog)) as NewEntityDialog;
+
+            var result = await _contentDialogService.ShowSimpleDialogAsync(
+                new SimpleContentDialogCreateOptions()
                 {
-                    TreeNodes.Add(node);
+                    Title = "Create new entity",
+                    Content = content,
+                    PrimaryButtonText = "Create",
+                    CloseButtonText = "Cancel",
                 }
-                Debug.WriteLine(JsonArrays.First().ToString());
+            );
+
+            switch (result)
+            {
+                case ContentDialogResult.Primary:
+                    entity.Children.Add(content.ViewModel.SelectedEntityType);
+                    // TO DO
+                    break;
+                case ContentDialogResult.Secondary:
+                case ContentDialogResult.None:
+                default:
+                    break;
             }
+            IsDialogOpened = false;
+        }
+
+        [RelayCommand]
+        public async Task OpenNewFormatterDialog()
+        {
+            IsDialogOpened = true;
+            var content = _serviceProvider.GetService(typeof(NewFormatterDialog)) as NewFormatterDialog;
+
+            var result = await _contentDialogService.ShowSimpleDialogAsync(
+                new SimpleContentDialogCreateOptions()
+                {
+                    Title = "Create new formatter",
+                    Content = content,
+                    PrimaryButtonText = "Create",
+                    CloseButtonText = "Cancel",
+                }
+            );
+
+            switch (result)
+            {
+                case ContentDialogResult.Primary:
+
+                    break;
+                case ContentDialogResult.Secondary:
+                case ContentDialogResult.None:
+                default:
+                    break;
+            }
+            IsDialogOpened = false;
         }
 
         #region WebView2 commands
         private async void InitWebView2()
         {
             await WebView.EnsureCoreWebView2Async(await CoreWebView2Environment.CreateAsync(null, null, new CoreWebView2EnvironmentOptions("")));
-            LoadPage();
+            LoadUrl();
         }
         public async Task<string> GetDocumentHtmlAsync()
         {
@@ -129,15 +197,6 @@ namespace ToolExplorerWPF.ViewModels.Pages
 
 
         #region RichTextBox commands
-        private void InitRichTextBox()
-        {
-            var paragraphStyle = new Style(typeof(Paragraph));
-            paragraphStyle.Setters.Add(new Setter(Paragraph.MarginProperty, new Thickness(0)));
-
-            RichTextBox.Resources.Add(typeof(Paragraph), paragraphStyle);
-            RichTextBox.VerticalScrollBarVisibility = System.Windows.Controls.ScrollBarVisibility.Auto;
-            RichTextBox.HorizontalScrollBarVisibility = System.Windows.Controls.ScrollBarVisibility.Auto;
-        }
         private string GetDocumentText()
         {
             TextRange textRange = new TextRange(RichTextBox.Document.ContentStart, RichTextBox.Document.ContentEnd);
