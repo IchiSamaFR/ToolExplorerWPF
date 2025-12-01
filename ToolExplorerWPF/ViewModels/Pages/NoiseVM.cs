@@ -85,7 +85,7 @@ namespace ToolExplorerWPF.ViewModels.Pages
                                 return;
                             }
 
-                            var col = _perlin.Noise(x / Zoom, y / Zoom) * 0.5f + 0.5f;
+                            var col = _perlin.NoiseClamped(x / Zoom, y / Zoom);
                             var grad = (int)MathF.Max(col * 255, 0);
                             pixelColors[x, y] = Color.FromArgb(255, grad, grad, grad).ToArgb();
                         }

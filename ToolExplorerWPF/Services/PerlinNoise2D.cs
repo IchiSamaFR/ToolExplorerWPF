@@ -8,8 +8,11 @@ using System.Threading.Tasks;
 namespace ToolExplorerWPF.Services
 {
     public class PerlinNoise2D
-    {
-        private Random _random;
+	{
+		private const float MIN_CALCULATED_VALUE = -0.7f;
+		private const float MAX_CALCULATED_VALUE = 0.7f;
+
+		private Random _random;
         private int[] _permutation;
 
         private Vector2[] _gradients;
@@ -92,6 +95,10 @@ namespace ToolExplorerWPF.Services
             return Math.Max(Math.Min(total, 1f), -1f);
         }
 
-
-    }
+		public float NoiseClamped(float x, float y)
+		{
+			var value = Noise(x, y);
+			return Math.Clamp((value - MIN_CALCULATED_VALUE) / (MAX_CALCULATED_VALUE - MIN_CALCULATED_VALUE), 0, 1);
+		}
+	}
 }
