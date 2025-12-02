@@ -40,7 +40,7 @@
                         Minimum="1"
                         Maximum="999"
                         TickFrequency="1"
-                        Value="{Binding Seed, Mode=TwoWay}"  Margin="0 0 10 0"/>
+                        Value="{Binding Seed}"  Margin="0 0 10 0"/>
                     <TextBox Grid.Column="1" Text="{Binding Seed}"/>
                 </Grid>
                 <ui:TextBlock Text="Zoom"/>
@@ -55,14 +55,29 @@
                         Minimum="1"
                         Maximum="999"
                         TickFrequency="1"
-                        Value="{Binding Zoom, Mode=TwoWay}"  Margin="0 0 10 0"/>
+                        Value="{Binding Zoom}"  Margin="0 0 10 0"/>
                     <TextBox Grid.Column="1" Text="{Binding Zoom}"/>
-                </Grid>
+				</Grid>
+				<ui:TextBlock Text="Pixel size"/>
+				<Grid>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="*"/>
+						<ColumnDefinition Width="50"/>
+					</Grid.ColumnDefinitions>
+					<Slider HorizontalAlignment="Stretch"
+                        VerticalAlignment="Center"
+                        IsSnapToTickEnabled="True"
+                        Minimum="1"
+                        Maximum="50"
+                        TickFrequency="1"
+                        Value="{Binding PixelSize}"  Margin="0 0 10 0"/>
+					<TextBox Grid.Column="1" Text="{Binding PixelSize}"/>
+				</Grid>
 
-                <ui:Button
+				<ui:Button
                     Grid.Column="0" Margin="0 10 0 0"
                     Appearance="Primary"
-                    Command="{Binding GenerateNoiseCommand, Mode=OneWay}"
+                    Command="{Binding GenerateNoiseCommand}"
                     Content="Generate noise"
                     Icon="Fluent24" />
             </StackPanel>

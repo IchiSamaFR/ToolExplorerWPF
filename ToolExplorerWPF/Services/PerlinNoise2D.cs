@@ -71,33 +71,36 @@ namespace ToolExplorerWPF.Services
             return Drop(u) * Drop(v);
         }
 
-        public float Noise(float x, float y)
-        {
-            var cell = new Vector2((float)Math.Floor(x), (float)Math.Floor(y));
-
-            var total = 0f;
-
-            var corners = new[] { new Vector2(0, 0), new Vector2(0, 1), new Vector2(1, 0), new Vector2(1, 1) };
-
-            foreach (var n in corners)
-            {
-                var ij = cell + n;
-                var uv = new Vector2(x - ij.X, y - ij.Y);
-
-                var index = _permutation[(int)ij.X % _permutation.Length];
-                index = _permutation[(index + (int)ij.Y) % _permutation.Length];
-
-                var grad = _gradients[index % _gradients.Length];
-
-                total += Q(uv.X, uv.Y) * Vector2.Dot(grad, uv);
-            }
-
-            return Math.Max(Math.Min(total, 1f), -1f);
-        }
-
-		public float NoiseClamped(float x, float y)
+		public float Noise(float x, float y, float zoom = 1f)
 		{
-			var value = Noise(x, y);
+			x /= zoom;
+			y /= zoom;
+
+			var cell = new Vector2((float)Math.Floor(x), (float)Math.Floor(y));
+
+			var total = 0f;
+
+			var corners = new[] { new Vector2(0, 0), new Vector2(0, 1), new Vector2(1, 0), new Vector2(1, 1) };
+
+			foreach (var n in corners)
+			{
+				var ij = cell + n;
+				var uv = new Vector2(x - ij.X, y - ij.Y);
+
+				var index = _permutation[(int)ij.X % _permutation.Length];
+				index = _permutation[(index + (int)ij.Y) % _permutation.Length];
+
+				var grad = _gradients[index % _gradients.Length];
+
+				total += Q(uv.X, uv.Y) * Vector2.Dot(grad, uv);
+			}
+
+			return Math.Max(Math.Min(total, 1f), -1f);
+		}
+
+		public float NoiseClamped(float x, float y, float zoom = 1f)
+		{
+			var value = Noise(x, y, zoom);
 			return Math.Clamp((value - MIN_CALCULATED_VALUE) / (MAX_CALCULATED_VALUE - MIN_CALCULATED_VALUE), 0, 1);
 		}
 	}
